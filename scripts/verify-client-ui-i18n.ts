@@ -36,7 +36,11 @@ const COPY_NAME = /(?:^|_)(?:aria|copy|description|empty|heading|label|message|p
 const COPY_SUFFIX = /(?:aria|copy|description|empty|heading|label|labels|message|placeholder|summary|text|title|tooltip|tabs)$/i
 const IMMUTABLE_LANGUAGE_TOKENS = new Set([
   'Function',
+  // Product brand lockup, rendered as decorative aria-hidden wordmark text
+  // (BrandWordmark); a brand name is the same in every language.
+  'HARNESS',
   'K',
+  'KROKKI',
   'M',
   'MB',
   'Symbol',

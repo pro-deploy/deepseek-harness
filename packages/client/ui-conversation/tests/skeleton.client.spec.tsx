@@ -504,7 +504,7 @@ describe('ConversationRoot resident composer', () => {
     // blank the column for the history round-trip.
     const root = b.view.container.querySelector('[data-phase]')
     expect(root?.getAttribute('data-phase')).toBe('hero')
-    expect(b.view.getByText('探索未至之境')).toBeTruthy()
+    expect(b.view.getByTestId('view-conversation.hero.brand.mark')).toBeTruthy()
     expect(b.view.getByRole('textbox')).toBeTruthy()
   })
 
