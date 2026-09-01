@@ -53,6 +53,17 @@ export function contextForm(source: unknown): KnownContextForm | null {
 }
 
 /**
+ * Present an internal plugin id as a producer label without leaking the npm
+ * scope and `dsh-` package prefix to the reader: `@deepseek-ai/dsh-system-prompt`
+ * reads as `system-prompt`.
+ * @param plugin - the durable plugin id.
+ * @returns the scope-stripped producer label.
+ */
+function pluginLabel(plugin: string): string {
+  return plugin.replace(/^@[^/]+\//, '').replace(/^dsh-/, '')
+}
+
+/**
  * Project a durable message source to the Chat row's role and producer label.
  * @param source - Logged `user/message` source.
  * @returns Role and label rendered by Chat.
@@ -66,8 +77,10 @@ export function contextProvenance(source: unknown): ContextProvenanceView {
       return { role: 'recall', label: joined(collect(record, 'references', 'label')) ?? kind }
     case 'agent-instructions':
       return { role: 'inject', label: joined(collect(record, 'changes', 'path')) ?? kind }
-    case 'plugin':
-      return { role: 'inject', label: readString(record, 'plugin') ?? kind }
+    case 'plugin': {
+      const plugin = readString(record, 'plugin')
+      return { role: 'inject', label: plugin === null ? kind : pluginLabel(plugin) }
+    }
     case 'skill-invocation':
       return { role: 'inject', label: readString(record, 'name') ?? kind }
     default:
