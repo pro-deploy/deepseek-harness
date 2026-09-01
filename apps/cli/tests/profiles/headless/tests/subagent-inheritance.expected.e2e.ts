@@ -49,7 +49,7 @@ async function seedReadOnlyParent(root: string, cwd: string): Promise<void> {
       data: {
         header: {
           config: {
-            provider: 'deepseek-official',
+            provider: 'krokki-official',
             model: 'deepseek-v4-flash',
             reasoningEffort: ReasoningEffortId('low'),
           },

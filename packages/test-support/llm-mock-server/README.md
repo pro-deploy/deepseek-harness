@@ -42,8 +42,8 @@ pnpm run mock:llm \
 Point the shipping DeepSeek adapter at the server; it appends `/chat/completions` to the configured base:
 
 ```sh
-DEEPSEEK_BASE_URL=http://127.0.0.1:8000/v1 \
-DEEPSEEK_API_KEY=mock-key \
+KROKKI_BASE_URL=http://127.0.0.1:8000/v1 \
+KROKKI_API_KEY=mock-key \
 pnpm dsh --profile headless "test provider recovery"
 ```
 

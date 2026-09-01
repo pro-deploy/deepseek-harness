@@ -14,7 +14,7 @@ import * as acp from '../src/index.ts'
 /**
  * With-key cross-process boundary proof: the backend spawns the real dsh ACP profile, speaks ACP over
  * stdio, and returns its real model answer. This is the out-of-process counterpart to in-process
- * spawn coverage and self-skips without `DEEPSEEK_API_KEY`.
+ * spawn coverage and self-skips without `KROKKI_API_KEY`.
  */
 
 // The real ACP profile: dsh plus the example's live DeepSeek patch.
@@ -32,8 +32,8 @@ function resolveChildLaunch(dshHome: string) {
     configArgs: ['--profile', 'acp', '--patch', exampleConfig],
     tsconfigPath: repoTsconfig,
     env: {
-      ...process.env.DEEPSEEK_API_KEY !== undefined ? { DEEPSEEK_API_KEY: process.env.DEEPSEEK_API_KEY } : {},
-      ...process.env.DEEPSEEK_BASE_URL !== undefined ? { DEEPSEEK_BASE_URL: process.env.DEEPSEEK_BASE_URL } : {},
+      ...process.env.KROKKI_API_KEY !== undefined ? { KROKKI_API_KEY: process.env.KROKKI_API_KEY } : {},
+      ...process.env.KROKKI_BASE_URL !== undefined ? { KROKKI_BASE_URL: process.env.KROKKI_BASE_URL } : {},
       DSH_HOME: dshHome,
       DSH_PERMISSION_MODE: 'danger-full-access',
     },
@@ -53,7 +53,7 @@ afterEach(async () => {
   workdir = undefined
 })
 
-describe.skipIf(!process.env.DEEPSEEK_API_KEY)('ACP backend with-key e2e (drive our own acp-agent)', () => {
+describe.skipIf(!process.env.KROKKI_API_KEY)('ACP backend with-key e2e (drive our own acp-agent)', () => {
   it('drives the real acp-agent example process to answer a prompt', async () => {
     workdir = await mkdtemp(join(tmpdir(), 'dsh-subagent-acp-e2e-'))
     const childLaunch = resolveChildLaunch(join(workdir, '.dsh-child'))

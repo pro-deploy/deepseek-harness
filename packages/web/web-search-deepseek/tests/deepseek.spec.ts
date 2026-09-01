@@ -311,7 +311,7 @@ describe('DeepSeekSearchProvider error handling', () => {
 
   it('uses the default credential reference when no resolver is configured', async () => {
     await expect(searchProvider({ ...options, apiKey: '' }).search({ query: 'q' }))
-      .rejects.toThrow('DeepSeek search has no API key for "DEEPSEEK_API_KEY"')
+      .rejects.toThrow('DeepSeek search has no API key for "KROKKI_API_KEY"')
   })
 
   it('observes cancellation triggered synchronously by credential resolution', async () => {
@@ -482,8 +482,8 @@ describe('web-search-deepseek plugin registration', () => {
   })
 
   it('falls back to the env key and defaults when config omits them', async () => {
-    const prev = process.env.DEEPSEEK_API_KEY
-    process.env.DEEPSEEK_API_KEY = 'env-key'
+    const prev = process.env.KROKKI_API_KEY
+    process.env.KROKKI_API_KEY = 'env-key'
     try {
       const fetchMock = vi.fn(async () => jsonResponse(searchResponse()))
       vi.stubGlobal('fetch', fetchMock)
@@ -492,19 +492,19 @@ describe('web-search-deepseek plugin registration', () => {
       deepseekPlugin.apply(ctx, {})
       await ctx.web.search({ query: 'q' })
       const [url, init] = fetchMock.mock.calls[0] as unknown as [string, RequestInit]
-      expect(url).toBe('https://api.deepseek.com/anthropic/v1/messages')
+      expect(url).toBe('https://api.krokki.com/anthropic/v1/messages')
       expect((init.headers as Record<string, string>)['x-api-key']).toBe('env-key')
       expect(JSON.parse(init.body as string)).toMatchObject({ model: 'deepseek-v4-flash' })
       await ctx.fiber.dispose()
     } finally {
-      if (prev === undefined) delete process.env.DEEPSEEK_API_KEY
-      else process.env.DEEPSEEK_API_KEY = prev
+      if (prev === undefined) delete process.env.KROKKI_API_KEY
+      else process.env.KROKKI_API_KEY = prev
     }
   })
 
   it('resolves the credential for each search so a stored or rotated key needs no restart', async () => {
-    const previous = process.env.DEEPSEEK_API_KEY
-    delete process.env.DEEPSEEK_API_KEY
+    const previous = process.env.KROKKI_API_KEY
+    delete process.env.KROKKI_API_KEY
     const dir = await mkdtemp(join(tmpdir(), 'dsh-web-search-credentials-'))
     const fetchMock = vi.fn(async (_input: RequestInfo | URL, _init?: RequestInit) => jsonResponse(searchResponse()))
     vi.stubGlobal('fetch', fetchMock)
@@ -517,7 +517,7 @@ describe('web-search-deepseek plugin registration', () => {
       await expect(ctx.web.search({ query: 'missing' }))
         .rejects.toThrow(expect.objectContaining({ code: 'WEB_PROVIDER_CREDENTIAL_MISSING' }))
 
-      const ref = credentialRef('DEEPSEEK_API_KEY')
+      const ref = credentialRef('KROKKI_API_KEY')
       await ctx.credentials.set(ref, 'stored-key')
       await ctx.web.search({ query: 'stored' })
       await ctx.credentials.set(ref, 'rotated-key')
@@ -528,14 +528,14 @@ describe('web-search-deepseek plugin registration', () => {
     } finally {
       await ctx.fiber.dispose()
       await rm(dir, { recursive: true, force: true })
-      if (previous === undefined) delete process.env.DEEPSEEK_API_KEY
-      else process.env.DEEPSEEK_API_KEY = previous
+      if (previous === undefined) delete process.env.KROKKI_API_KEY
+      else process.env.KROKKI_API_KEY = previous
     }
   })
 
   it('reports an actionable credential error when neither config nor env supplies a key', async () => {
-    const prev = process.env.DEEPSEEK_API_KEY
-    delete process.env.DEEPSEEK_API_KEY
+    const prev = process.env.KROKKI_API_KEY
+    delete process.env.KROKKI_API_KEY
     try {
       const ctx = new Context()
       await ctx.plugin(WebRuntime, { searchProvider: DEEPSEEK_PROVIDER_ID })
@@ -550,7 +550,7 @@ describe('web-search-deepseek plugin registration', () => {
       if (!(caught instanceof Error)) throw new Error('search did not throw an Error')
       expect(caught.message).toMatch(/store it through the credentials service.*Models page/s)
     } finally {
-      if (prev !== undefined) process.env.DEEPSEEK_API_KEY = prev
+      if (prev !== undefined) process.env.KROKKI_API_KEY = prev
     }
   })
 })

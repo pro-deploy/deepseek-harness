@@ -9,7 +9,7 @@ kind: "package-reference"
 
 ## 概述
 
-`dsh-credentials` 让机密值留在配置之外：API 密钥只存一次，在 settings 或 `cordis.yml` 中按名引用（`DEEPSEEK_API_KEY`），产品在提供方请求需要时提供该值。在这些引用之外，它还保存持久化的凭据记录——按插件组织的条目，例如授权 grant 或提供方环境值——让插件跨重启持有它为自身 id 管理的凭据。轮换后的密钥会作用于紧随其后的下一次请求——无需重启，无需改配置。配置界面能告诉你某个密钥或记录是否已设置、来自哪里、能否修改，而绝不显示值本身。存储空值等于「没有密钥」，因此空白永远不会伪装成已配置的机密；记录的存在本身就是全部事实，一条不含任何值的条目是有意陈述，而不是空白。
+`dsh-credentials` 让机密值留在配置之外：API 密钥只存一次，在 settings 或 `cordis.yml` 中按名引用（`KROKKI_API_KEY`），产品在提供方请求需要时提供该值。在这些引用之外，它还保存持久化的凭据记录——按插件组织的条目，例如授权 grant 或提供方环境值——让插件跨重启持有它为自身 id 管理的凭据。轮换后的密钥会作用于紧随其后的下一次请求——无需重启，无需改配置。配置界面能告诉你某个密钥或记录是否已设置、来自哪里、能否修改，而绝不显示值本身。存储空值等于「没有密钥」，因此空白永远不会伪装成已配置的机密；记录的存在本身就是全部事实，一条不含任何值的条目是有意陈述，而不是空白。
 
 ## 目录
 
@@ -51,7 +51,7 @@ import { credentialRef } from '@deepseek-ai/dsh-credentials'
 
 declare const ctx: Context
 
-const ref = credentialRef('DEEPSEEK_API_KEY')          // POSIX shell identifier, branded
+const ref = credentialRef('KROKKI_API_KEY')          // POSIX shell identifier, branded
 const hit = await ctx.credentials.resolve(ref)         // { value, source } | undefined
 const info = await ctx.credentials.describe(ref)       // { configured, source?, writable } — never the value
 await ctx.credentials.set(ref, 'sk-…')                 // rejects while a read-only source shadows the ref
@@ -85,14 +85,14 @@ await ctx.credentials.deleteRecord(key)                  // no-op when absent
 settings 分节或 `cordis.yml` 条目按名引用密钥，而不是包含密钥本身——例如 LLM（大语言模型）适配器接受 `apiKeyEnv`：
 
 ```yaml
-apiKeyEnv: DEEPSEEK_API_KEY
+apiKeyEnv: KROKKI_API_KEY
 ```
 
 需要该密钥的请求使用它当前存储的值，因此轮换密钥会作用于紧随其后的下一次请求——无需重启，无需改配置。
 
 ### 可能出错的地方
 
-- **启动环境提供的密钥无法被覆盖**——`DEEPSEEK_API_KEY=… dsh`（或 CI 机密、容器 `-e`）在本轮运行中优先，并被报告为只读；请先在启动 shell 中清除该变量，再存储其他值。
+- **启动环境提供的密钥无法被覆盖**——`KROKKI_API_KEY=… dsh`（或 CI 机密、容器 `-e`）在本轮运行中优先，并被报告为只读；请先在启动 shell 中清除该变量，再存储其他值。
 - **空值无法存储**——存储空字符串会被拒绝；请改为移除密钥。
 - **密钥值绝不会出现在配置界面或诊断信息中**——界面只显示密钥是否已设置、来自哪里、能否修改；值本身留在存储中。
 

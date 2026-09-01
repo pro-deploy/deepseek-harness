@@ -183,7 +183,7 @@ function createEnvironmentProbeProfile(home: string, project: string): void {
     '  void ctx.loader.await().then(async () => {',
     "    let text = ''",
     '    for await (const chunk of ctx.llm.stream({',
-    "      provider: 'deepseek-official',",
+    "      provider: 'krokki-official',",
     "      model: 'deepseek-v4-flash',",
     '      messages: [],',
     '      maxTokens: 32,',
@@ -413,7 +413,7 @@ describe.skipIf(!existsSync(dshBin))('dsh BUILT bin (node lib/bin.js, no tsx)', 
       const result = await runBuiltBin(['--profile', 'sdk', '--patch', patch], {
         DSH_HOME: home,
         DSH_TELEMETRY_DISABLED: '1',
-        DEEPSEEK_API_KEY: 'built-sdk-startup-failure-no-call',
+        KROKKI_API_KEY: 'built-sdk-startup-failure-no-call',
       }, home)
       expect(result.code).toBe(1)
       expect(result.stdout).toBe('')
@@ -435,7 +435,7 @@ describe.skipIf(!existsSync(dshBin))('dsh BUILT bin (node lib/bin.js, no tsx)', 
         ...process.env,
         DSH_HOME: home,
         DSH_TELEMETRY_DISABLED: '1',
-        DEEPSEEK_API_KEY: 'built-sdk-profile-no-call',
+        KROKKI_API_KEY: 'built-sdk-profile-no-call',
       },
       extendEnv: false,
     })
@@ -460,7 +460,7 @@ describe.skipIf(!existsSync(dshBin))('dsh BUILT bin (node lib/bin.js, no tsx)', 
         jsonrpc: '2.0',
         id: 1,
         method: 'initialize',
-        params: { cwd: home, provider: 'deepseek-official', model: 'deepseek-v4-flash' },
+        params: { cwd: home, provider: 'krokki-official', model: 'deepseek-v4-flash' },
       })}\n`)
       expect(await response(1)).toMatchObject({
         jsonrpc: '2.0',
@@ -496,8 +496,8 @@ describe.skipIf(!existsSync(dshBin))('dsh BUILT bin (node lib/bin.js, no tsx)', 
         ...process.env,
         DSH_HOME: home,
         DSH_TELEMETRY_DISABLED: '1',
-        DEEPSEEK_API_KEY: apiKey,
-        DEEPSEEK_BASE_URL: server.baseURL,
+        KROKKI_API_KEY: apiKey,
+        KROKKI_BASE_URL: server.baseURL,
         DSH_PERMISSION_MODE: 'danger-full-access',
       },
       extendEnv: false,
@@ -576,8 +576,8 @@ describe.skipIf(!existsSync(dshBin))('dsh BUILT bin (node lib/bin.js, no tsx)', 
       const result = await runBuiltBin(['--profile', 'headless', 'answer', 'from', 'the', 'published', 'entry'], {
         DSH_HOME: home,
         DSH_TELEMETRY_DISABLED: '1',
-        DEEPSEEK_API_KEY: apiKey,
-        DEEPSEEK_BASE_URL: server.baseURL,
+        KROKKI_API_KEY: apiKey,
+        KROKKI_BASE_URL: server.baseURL,
       })
       expect(result.code, result.stderr).toBe(0)
       expect(result.stdout).toBe('published headless profile reached the mock')
@@ -623,7 +623,7 @@ describe.skipIf(!existsSync(dshBin))('dsh BUILT bin (node lib/bin.js, no tsx)', 
     })
     const home = mkdtempSync(join(tmpdir(), 'dsh-home-environment-'))
     const project = mkdtempSync(join(tmpdir(), 'dsh-home-project-'))
-    writeFileSync(join(home, '.credentials.yaml'), `version: 1\nrefs:\n  DEEPSEEK_API_KEY: ${apiKey}\n`, { mode: 0o600 })
+    writeFileSync(join(home, '.credentials.yaml'), `version: 1\nrefs:\n  KROKKI_API_KEY: ${apiKey}\n`, { mode: 0o600 })
     createEnvironmentProbeProfile(home, project)
     try {
       const result = await runBuiltBin(
@@ -631,8 +631,8 @@ describe.skipIf(!existsSync(dshBin))('dsh BUILT bin (node lib/bin.js, no tsx)', 
         {
           DSH_HOME: home,
           DSH_TELEMETRY_DISABLED: '1',
-          DEEPSEEK_API_KEY: undefined,
-          DEEPSEEK_BASE_URL: server.baseURL,
+          KROKKI_API_KEY: undefined,
+          KROKKI_BASE_URL: server.baseURL,
         },
         project,
       )
@@ -663,7 +663,7 @@ describe.skipIf(!existsSync(dshBin))('dsh BUILT bin (node lib/bin.js, no tsx)', 
     try {
       const result = await runBuiltBin(['--profile', 'web', '--patch', invalidProvider], {
         DSH_HOME: home,
-        DEEPSEEK_API_KEY: 'keyless-invalid-config',
+        KROKKI_API_KEY: 'keyless-invalid-config',
         DSH_TELEMETRY_DISABLED: '1',
       })
       expect(result.code).toBe(1)
@@ -945,10 +945,7 @@ describe.skipIf(!existsSync(dshBin))('dsh BUILT bin (node lib/bin.js, no tsx)', 
       expect(rows.map(row => [row.id, row.name])).toEqual([
         ['sdk-app-startup', '@deepseek-ai/dsh-sdk-app'],
         ['sdk-jsonrpc-server', '@deepseek-ai/dsh-sdk-jsonrpc-server'],
-        ['deepseek-llm-api-extensions', '@deepseek-ai/dsh-deepseek-llm-api-extensions'],
-        ['session-log-deepseek', '@deepseek-ai/dsh-session-log-deepseek'],
-        ['plugin-package-inventory-deepseek', '@deepseek-ai/dsh-plugin-package-inventory-deepseek'],
-        ['llm-deepseek', '@deepseek-ai/dsh-llm-deepseek'],
+        ['llm-pi-ai', '@deepseek-ai/dsh-llm-pi-ai'],
         ['sandbox', '@deepseek-ai/dsh-sandbox-local'],
         ['session-projection', '@deepseek-ai/dsh-session-projection'],
         ['sandbox-policy', '@deepseek-ai/dsh-sandbox-policy'],

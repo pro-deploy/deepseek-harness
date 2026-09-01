@@ -24,15 +24,15 @@ import type {
 } from './types.ts'
 
 /** Stable id this provider registers under. */
-export const DEEPSEEK_PROVIDER_ID = 'deepseek-official'
+export const DEEPSEEK_PROVIDER_ID = 'krokki-official'
 
 /**
- * Default endpoint: DeepSeek's Anthropic-compatible API, `/v1` included
- * (`/messages` is appended). This is NOT the chat-completions base
- * (`https://api.deepseek.com`) `@deepseek-ai/dsh-llm-deepseek` uses, so this
- * provider does NOT reuse `$DEEPSEEK_BASE_URL` — only the API key is shared.
+ * Default endpoint: the KROKKI backend's Anthropic-compatible API, `/v1`
+ * included (`/messages` is appended). This is NOT the openai-completions chat
+ * base (`https://api.krokki.com/v1`) the KROKKI LLM route uses, so this
+ * provider does NOT reuse `$KROKKI_BASE_URL`; only the API key is shared.
  */
-export const DEEPSEEK_DEFAULT_BASE_URL = 'https://api.deepseek.com/anthropic/v1'
+export const DEEPSEEK_DEFAULT_BASE_URL = 'https://api.krokki.com/anthropic/v1'
 
 /** Default Anthropic-format model name (aligned with the repo's DeepSeek model vocabulary). */
 export const DEEPSEEK_DEFAULT_MODEL = 'deepseek-v4-flash'
@@ -299,7 +299,7 @@ export class DeepSeekSearchProvider implements WebSearchProvider {
       )
     }
     if (resolved !== undefined && resolved.length > 0) return resolved
-    const ref = options.apiKeyEnv ?? 'DEEPSEEK_API_KEY'
+    const ref = options.apiKeyEnv ?? 'KROKKI_API_KEY'
     throw new WebError(
       `DeepSeek search has no API key for "${ref}"; store it through the credentials service`
       + ' (the web Models page writes it), export it in the launching environment, or set a literal'

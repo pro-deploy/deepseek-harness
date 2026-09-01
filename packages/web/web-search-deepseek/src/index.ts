@@ -1,7 +1,7 @@
 /**
  * Register a DeepSeek-backed provider in `ctx.web`. It calls the Anthropic-compatible Messages API
- * with native `web_search_20250305`. The provider reuses `DEEPSEEK_API_KEY` but not
- * `DEEPSEEK_BASE_URL`, because search and chat-completions use different bases.
+ * with native `web_search_20250305`. The provider reuses `KROKKI_API_KEY` but not
+ * `KROKKI_BASE_URL`, because search and chat-completions use different bases.
  * @module @deepseek-ai/dsh-web-search-deepseek
  */
 
@@ -40,13 +40,13 @@ export const name = 'web-search-deepseek'
 /** The web seam this provider registers into. */
 export const inject = ['web']
 
-const DEFAULT_API_KEY_ENV = 'DEEPSEEK_API_KEY'
+const DEFAULT_API_KEY_ENV = 'KROKKI_API_KEY'
 
 /** Plugin config (all optional — `apply` fills env-var and constant defaults). */
 export interface Config {
   /** Literal DeepSeek API key; prefer {@link apiKeyEnv} so no secret enters configuration files. */
   apiKey?: string
-  /** Credential reference resolved for each search; defaults to `DEEPSEEK_API_KEY`. */
+  /** Credential reference resolved for each search; defaults to `KROKKI_API_KEY`. */
   apiKeyEnv?: string
   /** Anthropic-compatible endpoint base; `/messages` is appended. */
   baseURL?: string
@@ -75,7 +75,7 @@ export const Config: z<Config> = z.object({
 
 /**
  * Environment variable naming this provider's endpoint. Deliberately distinct
- * from `$DEEPSEEK_BASE_URL`, which belongs to the chat-completions adapter:
+ * from `$KROKKI_BASE_URL`, which belongs to the chat-completions adapter:
  * search speaks the Anthropic-compatible Messages API, so one variable cannot
  * serve both.
  */

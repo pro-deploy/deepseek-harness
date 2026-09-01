@@ -26,7 +26,7 @@ function remoteFail<T>(message: string): RemoteAnswer<T> {
 }
 
 const DIRECTORY = [
-  { provider: 'deepseek-official', displayName: 'DeepSeek', settingsNs: 'llm-deepseek', settingsPath: [], active: true },
+  { provider: 'krokki-official', displayName: 'KROKKI', settingsNs: 'llm-pi-ai', settingsPath: ['providers', 'krokki-official'], active: true },
   { provider: 'openai', displayName: 'openai', settingsNs: 'llm-pi-ai', settingsPath: ['providers', 'openai'], active: true },
   { provider: 'anthropic', displayName: 'anthropic', settingsNs: 'llm-pi-ai', settingsPath: ['providers', 'anthropic'], active: false },
   { provider: 'ghost', displayName: 'Ghost', settingsNs: '', settingsPath: [], active: true },
@@ -34,18 +34,13 @@ const DIRECTORY = [
 
 const NAMESPACES = [
   {
-    ns: 'llm-deepseek',
-    schema: {},
-    value: { apiKeyEnv: 'DEEPSEEK_API_KEY', baseURL: 'https://base' },
-    base: { baseURL: 'https://base' },
-    applies: 'live' as const,
-    secrets: [],
-    revision: 0,
-  },
-  {
     ns: 'llm-pi-ai',
     schema: {},
-    value: { providers: { openai: { apiKeyEnv: 'OPENAI_API_KEY' } } },
+    value: { providers: {
+      'krokki-official': { apiKeyEnv: 'KROKKI_API_KEY', baseURL: 'https://api.krokki.com' },
+      openai: { apiKeyEnv: 'OPENAI_API_KEY' },
+    } },
+    base: { providers: { 'krokki-official': { apiKeyEnv: 'KROKKI_API_KEY', baseURL: 'https://api.krokki.com' } } },
     user: { providers: { openai: { apiKeyEnv: 'OPENAI_API_KEY' } } },
     applies: 'live' as const,
     secrets: [],
@@ -85,7 +80,6 @@ function api(overrides: {
       listConfigurableProviders: () => mapProviderBatch(rows => rows
         .filter(row => row.settingsNs !== '')
         .map(({ active: _active, ...row }) => row)),
-      discoverModels: () => Promise.resolve(remoteOk([])),
     },
     settings: {
       describe: overrides.describeSettings
@@ -119,12 +113,12 @@ describe('ModelsSettingsStore', () => {
     expect(state.credentialError).toBeNull()
     // Named references first (rows order), then the derived <ROUTE>_API_KEY
     // of every row whose profile names none — one batched describe.
-    expect(seenRefs).toEqual([['DEEPSEEK_API_KEY', 'OPENAI_API_KEY', 'ANTHROPIC_API_KEY', 'GHOST_API_KEY']])
+    expect(seenRefs).toEqual([['KROKKI_API_KEY', 'OPENAI_API_KEY', 'ANTHROPIC_API_KEY', 'GHOST_API_KEY']])
     const byProvider = new Map(state.rows.map(row => [row.entry.provider, row]))
-    expect(byProvider.get('deepseek-official')).toMatchObject({
+    expect(byProvider.get('krokki-official')).toMatchObject({
       configured: true,
       removable: false,
-      apiKeyEnv: 'DEEPSEEK_API_KEY',
+      apiKeyEnv: 'KROKKI_API_KEY',
       credential: { configured: false, writable: true },
     })
     expect(byProvider.get('openai')).toMatchObject({

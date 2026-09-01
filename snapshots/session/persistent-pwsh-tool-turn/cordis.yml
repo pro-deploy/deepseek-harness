@@ -1,9 +1,17 @@
 # Minimal live counterpart for the persistent-pwsh-tool-turn snapshot composition.
-- id: llm-deepseek
-  name: '@deepseek-ai/dsh-llm-deepseek'
+- id: llm-pi-ai
+  name: '@deepseek-ai/dsh-llm-pi-ai'
   config:
-    models:
-      - id: deepseek-v4-pro
+    providers:
+      krokki-official:
+        displayName: KROKKI
+        apiKeyEnv: KROKKI_API_KEY
+        api: openai-completions
+        baseURL: https://api.krokki.com/v1
+        models:
+          - id: deepseek-v4-pro
+            name: Pro
+            contextWindow: 262144
 
 - id: sandbox-policy
   name: '@deepseek-ai/dsh-sandbox-policy'
@@ -28,7 +36,7 @@
 - id: agent-default-model
   name: '@deepseek-ai/dsh-agent-default-model'
   config:
-    provider: deepseek-official
+    provider: krokki-official
     model: deepseek-v4-pro
 
 - id: session-persistence-jsonl

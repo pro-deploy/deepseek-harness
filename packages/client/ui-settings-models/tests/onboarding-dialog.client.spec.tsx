@@ -27,16 +27,10 @@ function remoteFail(message: string) {
   return { ok: false as const, error: new RemoteError('gateway/internal', message, {}) }
 }
 
-const DeepSeekConfig = Schema.object({
-  apiKeyEnv: Schema.string().role('credential-ref'),
-  baseURL: Schema.string().pattern(/^https:\/\//),
-  reasoningEffort: Schema.union(['off', 'low', 'high', 'max']),
-  defaultContextWindow: Schema.number().step(1).min(1),
-  models: Schema.array(Schema.object({
-    id: Schema.string().required(),
-    name: Schema.string(),
-    description: Schema.string(),
-    contextWindow: Schema.number().step(1).min(1),
+const PiAiConfig = Schema.object({
+  providers: Schema.dict(Schema.object({
+    apiKeyEnv: Schema.string().role('credential-ref'),
+    baseURL: Schema.string(),
   })),
 })
 
@@ -45,10 +39,11 @@ const noAttention: AttentionSnapshot = new Map()
 const useSessionPendingInteraction: DeepSeekOnboardingDialogProps['useSessionPendingInteraction'] = selector => selector(noAttention)
 
 function deepSeekNamespace(apiKeyEnv: string | null): SettingsNamespaceView {
-  const value = apiKeyEnv === null ? {} : { apiKeyEnv }
+  const profile = apiKeyEnv === null ? {} : { apiKeyEnv }
+  const value = { providers: { 'krokki-official': profile } }
   return {
-    ns: 'llm-deepseek',
-    schema: JSON.parse(JSON.stringify(DeepSeekConfig.toJSON())) as JsonValue,
+    ns: 'llm-pi-ai',
+    schema: JSON.parse(JSON.stringify(PiAiConfig.toJSON())) as JsonValue,
     value,
     base: value,
     user: {},
@@ -78,7 +73,7 @@ function harness(options: {
   }
   let fileConfigured = false
   const configured = options.configured ?? (() => fileConfigured)
-  const apiKeyEnv = options.apiKeyEnv === undefined ? 'DEEPSEEK_API_KEY' : options.apiKeyEnv
+  const apiKeyEnv = options.apiKeyEnv === undefined ? 'KROKKI_API_KEY' : options.apiKeyEnv
   const mutate = vi.fn(() => Promise.resolve(remoteOk(deepSeekNamespace(apiKeyEnv))))
   const set = vi.fn((_ref: string, _value: string) => {
     if (options.setFailure !== undefined) return Promise.resolve(remoteFail(options.setFailure))
@@ -92,20 +87,19 @@ function harness(options: {
         return Promise.resolve(remoteOk(
           options.provider === false || options.providerActive === false
             ? []
-            : [{ id: 'deepseek-official', name: 'DeepSeek' }],
+            : [{ id: 'krokki-official', name: 'KROKKI' }],
         ))
       },
       listConfigurableProviders: () => Promise.resolve(remoteOk(
         options.provider === false
           ? []
           : [{
-            provider: 'deepseek-official',
-            displayName: 'DeepSeek',
-            settingsNs: options.providerSettingsNs ?? 'llm-deepseek',
-            settingsPath: [],
+            provider: 'krokki-official',
+            displayName: 'KROKKI',
+            settingsNs: options.providerSettingsNs ?? 'llm-pi-ai',
+            settingsPath: ['providers', 'krokki-official'],
           }],
       )),
-      discoverModels: () => Promise.resolve(remoteOk([])),
     },
     settings: {
       describe: () => Promise.resolve(remoteOk({
@@ -118,7 +112,7 @@ function harness(options: {
     credentials: {
       describe: () => options.describeFailure === undefined
         ? Promise.resolve(remoteOk({
-          DEEPSEEK_API_KEY: {
+          KROKKI_API_KEY: {
             configured: configured(),
             ...configured() && options.credential?.source !== undefined
               ? { source: options.credential.source }
@@ -138,7 +132,7 @@ function harness(options: {
   const complete = vi.fn()
   const unusedHook = (() => { throw new Error('unused standard hook') }) as never
   const props: DeepSeekOnboardingDialogProps = {
-    stepId: 'deepseek-official',
+    stepId: 'krokki-official',
     complete,
     openSection,
     useSessions: unusedHook,
@@ -172,7 +166,6 @@ describe('DeepSeekOnboardingDialog', () => {
     expect(screen.getByText(en.onboardingDescription)).toBeTruthy()
     const key = screen.getByLabelText<HTMLInputElement>(en.keyInput)
     await waitFor(() => { expect(document.activeElement).toBe(key) })
-    expect(screen.queryByText(en.customized)).toBeNull()
   })
 
   it('cannot be dismissed implicitly and restores the previous inert state', async () => {

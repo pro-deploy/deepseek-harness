@@ -6,7 +6,7 @@ import { mountAgentLoopTestDependencies } from '@deepseek-ai/dsh-agent-loop-test
 import LocalFileSystem from '@deepseek-ai/dsh-fs-local'
 import * as FsPolicy from '@deepseek-ai/dsh-fs-observation-policy'
 import * as ToolFs from '@deepseek-ai/dsh-tool-fs'
-import * as LlmDeepSeek from '@deepseek-ai/dsh-llm-deepseek'
+import * as LlmPiAi from '@deepseek-ai/dsh-llm-pi-ai'
 
 /**
  * Build the real fs-tool stack for with-key e2e tests. Agents have no session
@@ -18,7 +18,17 @@ export async function fsHarness(fsCwd: string, persona = ''): Promise<Context> {
   await ctx.plugin(SessionProjectionRegistry)
   await mountAgentLoopTestDependencies(ctx, { systemPrompt: { persona } })
   await ctx.plugin(AgentLoop, { agents: [] })
-  await ctx.plugin(LlmDeepSeek)
+  await ctx.plugin(LlmPiAi, {
+    providers: {
+      'krokki-official': {
+        displayName: 'KROKKI',
+        apiKeyEnv: 'KROKKI_API_KEY',
+        api: 'openai-completions',
+        baseURL: 'https://api.krokki.com/v1',
+        models: [{ id: 'deepseek-v4-flash', name: 'deepseek-v4-flash', contextWindow: 262144 }],
+      },
+    },
+  })
   await ctx.plugin(LocalFileSystem, { cwd: fsCwd })
   await ctx.plugin(FsPolicy)
   await ctx.plugin(ToolFs)

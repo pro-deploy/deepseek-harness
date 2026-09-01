@@ -77,7 +77,7 @@ describe.skipIf(MODE === 'record')('web e2e: another usable provider ends first-
       async () => settings.getByRole('textbox', { name: 'API 密钥', exact: true }).count(),
       { timeout: 10_000 },
     ).toBe(1)
-    await settings.getByRole('button', { name: '编辑 DeepSeek (deepseek-official)' }).waitFor({ timeout: 10_000 })
+    await settings.getByRole('button', { name: '编辑 KROKKI (krokki-official)' }).waitFor({ timeout: 10_000 })
     const dismissed = await captureStableAria(page, '[role="dialog"]', scaffold.workspaceCwd)
     await compareOrRefreshGolden(DISMISSED_EXPECTED, dismissed, MODE)
 
@@ -97,7 +97,7 @@ describe.skipIf(MODE === 'record')('web e2e: another usable provider ends first-
     expect(document).toContain('apiKeyEnv: MINIMAX_CN_API_KEY')
     const credentials = await readFile(join(scaffold.harnessHome, '.credentials.yaml'), 'utf8')
     expect(credentials).toContain('MINIMAX_CN_API_KEY: sk-e2e-minimax')
-    expect(credentials).not.toContain('DEEPSEEK_API_KEY')
+    expect(credentials).not.toContain('KROKKI_API_KEY')
 
     const warningsBefore = tripwire.warnings.length
     await page.reload({ waitUntil: 'load' })
@@ -116,7 +116,7 @@ describe.skipIf(MODE === 'record')('web e2e: another usable provider ends first-
     await page.getByRole('button', { name: '设置', exact: true }).click()
     await settings.waitFor({ timeout: 10_000 })
     await settings.getByRole('button', { name: '模型' }).click()
-    await settings.getByRole('button', { name: '编辑 DeepSeek (deepseek-official)' }).waitFor({ timeout: 10_000 })
+    await settings.getByRole('button', { name: '编辑 KROKKI (krokki-official)' }).waitFor({ timeout: 10_000 })
     expect(await settings.getByRole('textbox', { name: 'API 密钥', exact: true }).count()).toBe(0)
 
     expect((await page.content()).includes('sk-e2e-minimax')).toBe(false)

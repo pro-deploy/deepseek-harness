@@ -82,8 +82,8 @@ describe('Python SDK dsh profile keyless smoke', () => {
         DSH_HOME: join(root, '.dsh'),
         DSH_PERMISSION_MODE: 'danger-full-access',
         DSH_TELEMETRY_DISABLED: '1',
-        DEEPSEEK_API_KEY: 'keyless-smoke-no-call',
-        DEEPSEEK_BASE_URL: `http://127.0.0.1:${address.port}`,
+        KROKKI_API_KEY: 'keyless-smoke-no-call',
+        KROKKI_BASE_URL: `http://127.0.0.1:${address.port}`,
         ...(envValue === undefined ? {} : { DSH_MAX_TOKENS_AS_SUCCESS: envValue }),
       },
       timeout: 35_000,
@@ -108,7 +108,7 @@ describe('Python SDK dsh profile keyless smoke', () => {
         method: 'initialize',
         params: {
           cwd: root,
-          provider: 'deepseek-official',
+          provider: 'krokki-official',
           model: 'deepseek-v4-pro',
           reasoningEffort: 'max',
           maxTokens: 1234,
@@ -202,8 +202,8 @@ describe('Python SDK dsh profile keyless smoke', () => {
       env: {
         DSH_HOME: join(root, '.dsh'),
         DSH_SYSTEM_PROMPT: 'Minimal allowlist prompt.',
-        DEEPSEEK_API_KEY: 'keyless-smoke-no-call',
-        DEEPSEEK_BASE_URL: `http://127.0.0.1:${address.port}`,
+        KROKKI_API_KEY: 'keyless-smoke-no-call',
+        KROKKI_BASE_URL: `http://127.0.0.1:${address.port}`,
       },
       timeout: 35_000,
       killSignal: 'SIGKILL',
@@ -225,7 +225,7 @@ describe('Python SDK dsh profile keyless smoke', () => {
         jsonrpc: '2.0',
         id: 1,
         method: 'initialize',
-        params: { cwd: root, provider: 'deepseek-official', model: 'deepseek-v4-pro' },
+        params: { cwd: root, provider: 'krokki-official', model: 'deepseek-v4-pro' },
       })}\n`)
       await waitForLine(lines, value => value.id === 1, () => stderr)
       child.stdin.write(`${JSON.stringify({
@@ -273,7 +273,7 @@ describe('Python SDK dsh profile keyless smoke', () => {
         cwd: repoRoot,
         env: {
           DSH_HOME: join(root, '.dsh'),
-          DEEPSEEK_API_KEY: 'keyless-smoke-no-call',
+          KROKKI_API_KEY: 'keyless-smoke-no-call',
           DSH_MAX_TOKENS_AS_SUCCESS: 'sometimes',
         },
         stdin: 'ignore',

@@ -123,7 +123,7 @@ const SDK_ASSERTIONS: Readonly<Record<string, SdkAssertions>> = {
     },
   },
   'subagent-dsh-sdk-dynamic-route': {
-    environment: { DSH_TEST_PARENT_PROVIDER: 'deepseek-official' },
+    environment: { DSH_TEST_PARENT_PROVIDER: 'krokki-official' },
     dshSdkChild: {
       config: dshSdkChildConfig,
       agentConfig: {

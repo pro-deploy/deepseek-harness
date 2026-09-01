@@ -1,6 +1,6 @@
 # Keyless replay counterpart to persistent-pwsh.cordis.yml.
-- id: llm-deepseek
-  name: '@deepseek-ai/dsh-llm-deepseek'
+- id: llm-pi-ai
+  name: '@deepseek-ai/dsh-llm-pi-ai'
   disabled: true
 
 - insert:
@@ -8,8 +8,8 @@
       name: '@deepseek-ai/dsh-llm-replay'
       config:
         providers:
-          - id: deepseek-official
-            name: DeepSeek
+          - id: krokki-official
+            name: KROKKI
             models:
               - id: deepseek-v4-pro
 
@@ -36,7 +36,7 @@
 - id: agent-default-model
   name: '@deepseek-ai/dsh-agent-default-model'
   config:
-    provider: deepseek-official
+    provider: krokki-official
     model: deepseek-v4-pro
 
 - id: session-persistence-jsonl

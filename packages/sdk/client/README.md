@@ -36,7 +36,7 @@ import { ReasoningEffortId } from '@deepseek-ai/dsh-llm'
 await using harness = new DeepSeekHarness({
   profile: 'sdk',
   patches: ['./automation.cordis.yml'],
-  provider: 'deepseek-official',
+  provider: 'krokki-official',
   model: 'deepseek-v4-flash',
   reasoningEffort: ReasoningEffortId('max'),
   maxTokens: 49_152,

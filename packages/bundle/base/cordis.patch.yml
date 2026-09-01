@@ -27,14 +27,8 @@
     - id: llm
       name: '@deepseek-ai/dsh-llm'
 
-    - id: deepseek-llm-api-extensions
-      name: '@deepseek-ai/dsh-deepseek-llm-api-extensions'
-
     - id: session
       name: '@deepseek-ai/dsh-session'
-
-    - id: session-log-deepseek
-      name: '@deepseek-ai/dsh-session-log-deepseek'
 
     - id: typert
       name: '@deepseek-ai/dsh-typert-registry'
@@ -67,16 +61,13 @@
     - id: agent
       name: '@deepseek-ai/dsh-agent'
 
-    - id: plugin-package-inventory-deepseek
-      name: '@deepseek-ai/dsh-plugin-package-inventory-deepseek'
-
     # The transport-independent default for Agents created by entry points.
     # Settings may supply a saved selection; consumers read it at creation time.
     - id: agent-default-model
       name: '@deepseek-ai/dsh-agent-default-model'
       config:
-        provider: deepseek-official
-        model: deepseek-v4-flash
+        provider: krokki-official
+        model: deepseek/deepseek-v4-flash
 
     - id: jobs
       name: '@deepseek-ai/dsh-jobs-local'
@@ -84,9 +75,10 @@
     - id: llm-retry
       name: '@deepseek-ai/dsh-llm-retry'
 
-    # User-settings document (`$DSH_HOME/settings.yaml`, hot-reloaded): a
-    # `llm-deepseek:` or `llm-pi-ai:` section there overrides the adapter entries
-    # below without a restart, and is what the web Models page writes.
+    # User-settings document (`$DSH_HOME/settings.yaml`, hot-reloaded): an
+    # `llm-pi-ai:` section there overrides the KROKKI route entry below without a
+    # restart (for example to reach a different backend endpoint). The web Models
+    # page writes only the KROKKI backend token, not provider profiles.
     - id: settings
       name: '@deepseek-ai/dsh-settings-file'
 
@@ -97,15 +89,33 @@
     - id: credentials
       name: '@deepseek-ai/dsh-credentials-local'
 
-    # The pi-ai multi-provider twin, mounted dormant: zero routes (and no extra
-    # models in the picker) until a `llm-pi-ai:` settings section supplies provider
-    # profiles — then those routes register live, keys resolving per request
-    # through their apiKeyEnv references, and drop again when the section empties.
-    # Supplying those profiles is exactly what the web Models page does. Which
-    # adapters exist is composition; which providers run is the user's settings
-    # document.
+    # The single shipped KROKKI provider. All model access routes through the
+    # KROKKI backend (`api.krokki.com`, OpenAI-compatible), which itself proxies
+    # to whatever providers its own configuration defines; the product exposes
+    # exactly this one route. The user supplies one token, stored under the
+    # `KROKKI_API_KEY` reference and resolved per request; the route is
+    # configured-but-keyless until then and a model call fails with
+    # MISSING_CREDENTIAL. The model list is authoritative here (a pi-ai route
+    # never self-refreshes its catalog), so backend catalog changes are mirrored
+    # by editing this list. A deployment reaching a different endpoint (for
+    # example a staging proxy) overrides `baseURL` in the user `llm-pi-ai:`
+    # settings section without a rebuild.
     - id: llm-pi-ai
       name: '@deepseek-ai/dsh-llm-pi-ai'
+      config:
+        providers:
+          krokki-official:
+            displayName: KROKKI
+            apiKeyEnv: KROKKI_API_KEY
+            api: openai-completions
+            baseURL: https://api.krokki.com/v1
+            models:
+              - id: deepseek/deepseek-v4-flash
+                name: DeepSeek-V4-Flash
+                contextWindow: 262144
+              - id: deepseek/deepseek-v4-pro
+                name: DeepSeek-V4-Pro
+                contextWindow: 262144
 
     - id: session-persistence-jsonl
       name: '@deepseek-ai/dsh-session-persistence-jsonl'
@@ -439,7 +449,7 @@
 
     # Every mode enables the stable model-facing web_search tool. The Web app's
     # per-agent presets additionally enable web_fetch; other products opt in by
-    # overriding tool-web. DeepSeek search resolves the same DEEPSEEK_API_KEY
+    # overriding tool-web. DeepSeek search resolves the same KROKKI_API_KEY
     # credential the Models page manages for chat, at each search; its Messages
     # endpoint is separate from the chat-completions endpoint, so it takes its own
     # base-URL override. Anonymous fetch accepts only public HTTP(S) destinations,
@@ -450,13 +460,13 @@
     - id: web
       name: '@deepseek-ai/dsh-web'
       config:
-        searchProvider: deepseek-official
+        searchProvider: krokki-official
         fetchProvider: http
 
     - id: web-search-deepseek
       name: '@deepseek-ai/dsh-web-search-deepseek'
       config:
-        apiKeyEnv: DEEPSEEK_API_KEY
+        apiKeyEnv: KROKKI_API_KEY
 
     - id: web-fetch-http
       name: '@deepseek-ai/dsh-web-fetch-http'
@@ -492,10 +502,3 @@
     # overlay can pin another workspace.
     - id: fs-sandbox
       name: '@deepseek-ai/dsh-fs-sandbox'
-
-    # The native DeepSeek adapter. No key or endpoint is inlined: both resolve per
-    # request from the `llm-deepseek:` settings section over this entry, with the
-    # key coming from the credential store below. Thinking defaults are a deployment
-    # choice.
-    - id: llm-deepseek
-      name: '@deepseek-ai/dsh-llm-deepseek'

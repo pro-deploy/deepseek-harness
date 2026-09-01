@@ -20,7 +20,6 @@ import { existsSync } from 'node:fs'
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vitest'
-import { FiberState } from '@deepseek-ai/cordis'
 import { createNodeBuiltins, REPLACED_PREFIXES } from '@deepseek-ai/dsh-experimental-webworker-runtime/src/node/builtins.ts'
 import {
   setActiveModuleLoader, WorkerModuleLoader,
@@ -36,7 +35,6 @@ const repoRoot = fileURLToPath(new URL('../../../../', import.meta.url))
 /** A leaf workspace package: real build output, no dependencies to drag in. */
 const SUBJECT = '@deepseek-ai/dsh-timeout'
 const LANDLOCK = '@deepseek-ai/node-addon-landlock-run'
-const PLUGIN_INVENTORY = '@deepseek-ai/dsh-plugin-package-inventory-deepseek'
 const WEB_SERVER = '@deepseek-ai/dsh-host-webserver'
 
 const workspaces = indexWorkspacePackages(repoRoot)
@@ -96,14 +94,6 @@ const packedLandlock = (): ReturnType<typeof packVfsImage> => landlockMemo ??= p
   entries: [],
 })
 
-let pluginInventoryMemo: ReturnType<typeof packVfsImage> | undefined
-const packedPluginInventory = (): ReturnType<typeof packVfsImage> => pluginInventoryMemo ??= packVfsImage({
-  config: `- id: subject\n  name: '${PLUGIN_INVENTORY}'\n`,
-  profile: 'plugin-inventory-check',
-  workspaces,
-  resolveFrom: repoRoot,
-  entries: [],
-})
 
 let webServerMemo: ReturnType<typeof packVfsImage> | undefined
 const packedWebServer = (): ReturnType<typeof packVfsImage> => webServerMemo ??= packVfsImage({
@@ -254,58 +244,6 @@ const archive = async (): Promise<Uint8Array> =>
     expect(landlock.probe()).toBe('full')
   })
 
-  it('prepares the unchanged plugin-package inventory through Worker createRequire paths', async () => {
-    const result = packedPluginInventory()
-    expect(result.missing).toEqual([])
-
-    const vfs = loadVfsImage(await inflateImage(result.image, 'the packed plugin inventory'), DEFAULT_ROOT)
-    const loader = new WorkerModuleLoader({
-      vfs,
-      root: DEFAULT_ROOT,
-      staticModules: createNodeBuiltins(),
-      staticModulePrefixes: REPLACED_PREFIXES,
-    })
-    setActiveVfs(vfs)
-    setActiveModuleLoader(loader)
-    const inventory = loader.requireFrom(`${DEFAULT_ROOT}/workspace`)(PLUGIN_INVENTORY) as {
-      apply(ctx: unknown, config: unknown): void
-    }
-
-    type Prepared = { readonly value: { readonly version: number; readonly packages: readonly unknown[] } }
-    type Prepare = (request: { readonly body: object; readonly signal: AbortSignal }) => Promise<Prepared>
-    let prepare: Prepare | undefined
-    const baseUrl = `file://${DEFAULT_ROOT}/config/cordis.yml`
-    const tree: { readonly ctx: { readonly baseUrl: string }; entries(): readonly unknown[] } = {
-      ctx: { baseUrl },
-      entries: () => [entry],
-    }
-    const entry = {
-      options: { name: PLUGIN_INVENTORY },
-      disabled: false,
-      fiber: { state: FiberState.ACTIVE },
-      parent: { tree },
-    }
-    inventory.apply({
-      baseUrl,
-      loader: tree,
-      deepseekLlmApiExtensions: {
-        register: (field: string, contribution: { readonly prepare: Prepare }): void => {
-          expect(field).toBe('dsh_plugin_packages')
-          prepare = contribution.prepare
-        },
-      },
-    }, {})
-
-    if (prepare === undefined) throw new Error('packed plugin inventory did not register its request contribution')
-    const prepared = await prepare({ body: {}, signal: new AbortController().signal })
-    const manifest = JSON.parse(vfs.readFileSync(
-      `${DEFAULT_ROOT}/node_modules/${PLUGIN_INVENTORY}/package.json`, 'utf8',
-    ) as string) as { version: string }
-    expect(prepared.value).toEqual({
-      version: 1,
-      packages: [{ name: PLUGIN_INVENTORY, version: manifest.version }],
-    })
-  })
 
   it('refuses a body the packer did not lower, naming the image', async () => {
     // The case above only proves the packed bytes are wrappable. This is the

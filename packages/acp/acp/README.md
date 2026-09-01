@@ -38,7 +38,7 @@ Every session the server creates uses the provider and model configured here. Bo
 ```yaml
 - name: '@deepseek-ai/dsh-acp'
   config:
-    provider: deepseek-official
+    provider: krokki-official
     model: deepseek-v4-pro
 ```
 

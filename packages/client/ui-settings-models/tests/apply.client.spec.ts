@@ -33,7 +33,6 @@ async function bench(isLoopback = true, settings?: object, services: object = {}
     llm: {
       listProviders: vi.fn(() => Promise.resolve({ ok: true, value: [] })),
       listConfigurableProviders: vi.fn(() => Promise.resolve({ ok: true, value: [] })),
-      discoverModels: vi.fn(() => Promise.resolve({ ok: true, value: [] })),
       ...services,
     },
     // Without a settings face the mirror's reads fail and stay contained; the
@@ -82,19 +81,20 @@ describe('ui-settings-models apply', () => {
     expect(resolveSlotLabel(entry.options.label)).toBe('模型')
     const injected = (entry.inject as unknown as () => import('../src/client/ModelsSection.tsx').ModelsSectionInjected)()
     expect(injected.t('nav')).toBe('模型')
-    expect(injected.t('deleteTitle')).toBe('删除 {provider}？')
+    expect(injected.t('intro')).toBe('填入你的 KROKKI 令牌即可使用模型。')
     expect(typeof injected.controller.load).toBe('function')
     expect(injected.hooks.snapshot).toBe(injected.controller.store)
-    expect(typeof injected.operations.writeSettings).toBe('function')
+    expect(typeof injected.operations.storeCredential).toBe('function')
+    expect(typeof injected.operations.describeCredential).toBe('function')
     const onboarding = before.slots.entries('settings.onboarding')
     expect(onboarding).toHaveLength(2)
     expect(onboarding.find(entry => entry.options.id === 'welcome-notice')).toMatchObject({
       component: WelcomeNotice,
       options: { id: 'welcome-notice', order: -100 },
     })
-    const deepSeek = onboarding.find(entry => entry.options.id === 'deepseek-official')!
+    const deepSeek = onboarding.find(entry => entry.options.id === 'krokki-official')!
     expect(deepSeek.component).toBe(DeepSeekOnboardingDialog)
-    expect(deepSeek.options).toMatchObject({ id: 'deepseek-official', order: 0 })
+    expect(deepSeek.options).toMatchObject({ id: 'krokki-official', order: 0 })
     const deepSeekInjected = (
       deepSeek.inject as unknown as () => import('../src/client/DeepSeekOnboardingDialog.tsx').DeepSeekOnboardingInjected
     )()
@@ -120,10 +120,10 @@ describe('ui-settings-models apply', () => {
     b.locale.setLocale('en')
     expect(resolveSlotLabel(b.slots.entries('settings.section')[0]!.options.label)).toBe('Models')
     const injected = b.slots.entries('settings.section')[0]!.inject as unknown as () => import('../src/client/ModelsSection.tsx').ModelsSectionInjected
-    expect(injected().t('deleteTitle')).toBe('Delete {provider}?')
+    expect(injected().t('intro')).toBe('Enter your KROKKI token to use the models.')
     b.locale.setLocale('zh')
     expect(resolveSlotLabel(b.slots.entries('settings.section')[0]!.options.label)).toBe('模型')
-    expect(injected().t('deleteTitle')).toBe('删除 {provider}？')
+    expect(injected().t('intro')).toBe('填入你的 KROKKI 令牌即可使用模型。')
   })
 
   it('locale change while the slot is undeclared stays a no-op', async () => {
@@ -240,14 +240,14 @@ describe('pushed invalidations', () => {
     declare(b.slots)
     await b.ctx.plugin({ inject: [...inject], apply }).await()
     const entry = b.slots.entries('settings.onboarding')
-      .find(candidate => candidate.options.id === 'deepseek-official')!
+      .find(candidate => candidate.options.id === 'krokki-official')!
     const injected = (
       entry.inject as unknown as
       () => import('../src/client/DeepSeekOnboardingDialog.tsx').DeepSeekOnboardingInjected
     )()
     injected.controller.store.update((state) => { state.status = 'ready' })
     const load = vi.spyOn(injected.controller, 'load').mockResolvedValue()
-    b.remote.emit('credentials/reference-updated', ['DEEPSEEK_API_KEY'])
+    b.remote.emit('credentials/reference-updated', ['KROKKI_API_KEY'])
     expect(load).toHaveBeenCalledTimes(1)
   })
 

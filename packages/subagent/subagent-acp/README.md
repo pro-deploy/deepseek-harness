@@ -58,7 +58,7 @@ A DeepSeek Harness child uses the product launcher and an explicit absolute `DSH
     permission: reject
     env:
       DSH_HOME: /absolute/path/to/isolated-child-home
-      DEEPSEEK_API_KEY: !!js process.env.DEEPSEEK_API_KEY
+      KROKKI_API_KEY: !!js process.env.KROKKI_API_KEY
 ```
 
 ### What you get

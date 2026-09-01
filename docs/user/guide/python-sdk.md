@@ -43,15 +43,15 @@ Export the credential and, when needed, a compatible proxy endpoint:
 ### Linux and macOS
 
 ```sh
-export DEEPSEEK_API_KEY=sk-your-key-here
-# export DEEPSEEK_BASE_URL=http://127.0.0.1:8000/v1
+export KROKKI_API_KEY=sk-your-key-here
+# export KROKKI_BASE_URL=http://127.0.0.1:8000/v1
 ```
 
 ### Windows PowerShell
 
 ```powershell
-$env:DEEPSEEK_API_KEY = "sk-your-key-here"
-# $env:DEEPSEEK_BASE_URL = "http://127.0.0.1:8000/v1"
+$env:KROKKI_API_KEY = "sk-your-key-here"
+# $env:KROKKI_BASE_URL = "http://127.0.0.1:8000/v1"
 ```
 
 Run one task with explicit workspace and home paths:
@@ -88,7 +88,7 @@ from deepseek_harness import DeepSeekHarness
 workspace = Path("/absolute/path/to/disposable-workspace").resolve()
 dsh_home = Path("/absolute/path/to/example-dsh-home").resolve()
 with DeepSeekHarness(
-    provider="deepseek-official",
+    provider="krokki-official",
     model="deepseek-v4-flash",
     max_tokens=49_152,
     cwd=str(workspace),

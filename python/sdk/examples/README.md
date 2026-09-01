@@ -9,7 +9,7 @@ Runnable Python SDK example over the sole application launcher, `dsh --profile s
 Install `deepseek-harness-sdk`, export a model credential, then supply an isolated Harness home and workspace:
 
 ```sh
-export DEEPSEEK_API_KEY=sk-your-key-here
+export KROKKI_API_KEY=sk-your-key-here
 python python/sdk/examples/minimal.py \
   --dsh-home /absolute/path/to/example-dsh-home \
   --workspace /absolute/path/to/disposable-workspace \
@@ -17,7 +17,7 @@ python python/sdk/examples/minimal.py \
   "Inspect the repository and fix the failing tests."
 ```
 
-Set `DEEPSEEK_BASE_URL` for a compatible proxy, `DSH_MODEL` for the script's default model, or `DSH_SYSTEM_PROMPT` for the deployment persona. `--model` is the single runtime model selection; no matching environment variable is required. `--profile` can select another SDK-serving profile. The selected home stores the generated `sdk-minimal` profile and uncompressed JSONL session logs under `sessions/`; the script never reads `~/.dsh` implicitly.
+Set `KROKKI_BASE_URL` for a compatible proxy, `DSH_MODEL` for the script's default model, or `DSH_SYSTEM_PROMPT` for the deployment persona. `--model` is the single runtime model selection; no matching environment variable is required. `--profile` can select another SDK-serving profile. The selected home stores the generated `sdk-minimal` profile and uncompressed JSONL session logs under `sessions/`; the script never reads `~/.dsh` implicitly.
 
 The shipped [`@deepseek-ai/dsh-sdk-minimal` bundle](../../../packages/bundle/sdk-minimal/README.md) is the complete explicit Cordis tree for this mode. It exposes exactly:
 

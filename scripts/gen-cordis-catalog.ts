@@ -72,7 +72,6 @@ export const SERVICE_PAGE: Record<string, string> = {
   credentialsController: 'credentials.md',
   settingsController: 'settings.md',
   directoryPicker: 'workspace.md',
-  deepseekLlmApiExtensions: 'llm-streaming.md',
   dynamicCordisRunner: 'extensions.md',
   e2b: 'subprocess.md',
   fileReferences: 'session-reference.md',

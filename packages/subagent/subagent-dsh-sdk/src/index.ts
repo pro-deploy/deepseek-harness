@@ -51,7 +51,7 @@ export interface Config {
    * fails.
    */
   cwd?: string
-  /** Provider route the child runtime initializes with (default `deepseek-official`). */
+  /** Provider route the child runtime initializes with (default `krokki-official`). */
   provider: string
   /** Model the child runtime initializes with (default `deepseek-v4-flash`). */
   model: string
@@ -59,7 +59,7 @@ export interface Config {
   maxTokens?: number
   /**
    * Extra environment variables for the child process — e.g. the child
-   * runtime's own `DEEPSEEK_API_KEY`. Forwarded on top of a credential-scrubbed copy of the parent
+   * runtime's own `KROKKI_API_KEY`. Forwarded on top of a credential-scrubbed copy of the parent
    * env, so an explicit key here reaches the child while ambient secrets do
    * not leak implicitly.
    */
@@ -83,7 +83,7 @@ export const Config: z<Config> = z.object({
   patches: z.array(z.string()).default([]),
   dshHome: z.string().required(),
   cwd: z.string(),
-  provider: z.string().default('deepseek-official'),
+  provider: z.string().default('krokki-official'),
   model: z.string().default('deepseek-v4-flash'),
   maxTokens: z.number().step(1).min(1).max(Number.MAX_SAFE_INTEGER),
   env: z.dict(z.string()).default({}),

@@ -27,7 +27,7 @@ on:
         required: false
         default: false
     secrets:
-      DEEPSEEK_API_KEY_EXTERNAL:
+      KROKKI_API_KEY_EXTERNAL:
         description: Real DeepSeek API key for trusted installed-wheel pull-request tests.
         required: false
   workflow_dispatch:
@@ -354,11 +354,11 @@ jobs:
               || !(github.event.pull_request.head.repo.fork
                    || github.event.pull_request.user.login == 'dependabot[bot]'))
         env:
-          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY_EXTERNAL }}
+          KROKKI_API_KEY: ${{ secrets.KROKKI_API_KEY_EXTERNAL }}
         run: |
           set -euo pipefail
-          if [ -z "${DEEPSEEK_API_KEY:-}" ]; then
-            echo "::error::DEEPSEEK_API_KEY_EXTERNAL is empty; the installed-wheel real API test cannot self-skip."
+          if [ -z "${KROKKI_API_KEY:-}" ]; then
+            echo "::error::KROKKI_API_KEY_EXTERNAL is empty; the installed-wheel real API test cannot self-skip."
             exit 1
           fi
 
@@ -371,10 +371,10 @@ jobs:
                    || github.event.pull_request.user.login == 'dependabot[bot]'))
         shell: pwsh
         env:
-          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY_EXTERNAL }}
+          KROKKI_API_KEY: ${{ secrets.KROKKI_API_KEY_EXTERNAL }}
         run: |
-          if ([string]::IsNullOrWhiteSpace($env:DEEPSEEK_API_KEY)) {
-            throw 'DEEPSEEK_API_KEY_EXTERNAL is empty; the installed-wheel real API test cannot self-skip.'
+          if ([string]::IsNullOrWhiteSpace($env:KROKKI_API_KEY)) {
+            throw 'KROKKI_API_KEY_EXTERNAL is empty; the installed-wheel real API test cannot self-skip.'
           }
 
       - name: Run installed-wheel real API black-box test (POSIX)
@@ -385,8 +385,8 @@ jobs:
               || !(github.event.pull_request.head.repo.fork
                    || github.event.pull_request.user.login == 'dependabot[bot]'))
         env:
-          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY_EXTERNAL }}
-          DEEPSEEK_BASE_URL: https://api.deepseek.com
+          KROKKI_API_KEY: ${{ secrets.KROKKI_API_KEY_EXTERNAL }}
+          KROKKI_BASE_URL: https://api.krokki.com
         run: |
           set -euo pipefail
           blackbox_root="$(python -c 'import tempfile; print(tempfile.mkdtemp(prefix="dsh-sdk-blackbox-live-"))')"
@@ -406,8 +406,8 @@ jobs:
                    || github.event.pull_request.user.login == 'dependabot[bot]'))
         shell: pwsh
         env:
-          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY_EXTERNAL }}
-          DEEPSEEK_BASE_URL: https://api.deepseek.com
+          KROKKI_API_KEY: ${{ secrets.KROKKI_API_KEY_EXTERNAL }}
+          KROKKI_BASE_URL: https://api.krokki.com
         run: |
           $blackboxRoot = (& python -c 'import tempfile; print(tempfile.mkdtemp(prefix="dsh-sdk-blackbox-live-"))').Trim()
           Remove-Item Env:PYTHONPATH -ErrorAction SilentlyContinue

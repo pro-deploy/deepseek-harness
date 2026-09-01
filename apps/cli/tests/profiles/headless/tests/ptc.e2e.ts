@@ -17,7 +17,7 @@ import { LocalBashExecutor } from '@deepseek-ai/dsh-bash-local'
 import * as BashEnvPlugin from '@deepseek-ai/dsh-shell-env'
 import LocalSubprocessRuntime from '@deepseek-ai/dsh-subprocess-local'
 import * as ToolBash from '@deepseek-ai/dsh-tool-bash'
-import * as LlmDeepSeek from '@deepseek-ai/dsh-llm-deepseek'
+import * as LlmPiAi from '@deepseek-ai/dsh-llm-pi-ai'
 import { WorkerThreadCodeRuntime } from '@deepseek-ai/dsh-code-runtime-worker-thread'
 import LocalFileSystem from '@deepseek-ai/dsh-fs-local'
 import * as ToolFs from '@deepseek-ai/dsh-tool-fs'
@@ -59,7 +59,17 @@ async function ptcModeHarness(cwd: string): Promise<Context> {
   await harness.plugin(ToolRuntime, { mode: 'ptc' })
   await harness.plugin(AgentRegistry)
   await harness.plugin(AgentLoop, { agents: [] })
-  await harness.plugin(LlmDeepSeek)
+  await harness.plugin(LlmPiAi, {
+    providers: {
+      'krokki-official': {
+        displayName: 'KROKKI',
+        apiKeyEnv: 'KROKKI_API_KEY',
+        api: 'openai-completions',
+        baseURL: 'https://api.krokki.com/v1',
+        models: [{ id: 'deepseek-v4-flash', name: 'deepseek-v4-flash', contextWindow: 262144 }],
+      },
+    },
+  })
   await harness.plugin(LocalSubprocessRuntime)
   await harness.plugin(BashEnvPlugin)
   await harness.plugin(LocalBashExecutor, { cwd, timeoutMs: 30_000 })
@@ -80,7 +90,17 @@ async function workspacePtcModeHarness(): Promise<Context> {
   await harness.plugin(ToolFs)
   await harness.plugin(WorkspaceContext, { maxBytes: 65536 })
   await harness.plugin(AgentLoop, { agents: [] })
-  await harness.plugin(LlmDeepSeek, { models: [{ id: 'deepseek-v4-flash' }] })
+  await harness.plugin(LlmPiAi, {
+    providers: {
+      'krokki-official': {
+        displayName: 'KROKKI',
+        apiKeyEnv: 'KROKKI_API_KEY',
+        api: 'openai-completions',
+        baseURL: 'https://api.krokki.com/v1',
+        models: [{ id: 'deepseek-v4-flash', name: 'deepseek-v4-flash', contextWindow: 262144 }],
+      },
+    },
+  })
   await harness.plugin(WorkerThreadCodeRuntime, {})
   return harness
 }
@@ -352,11 +372,11 @@ function waitForIdle(harness: Context, agent: Agent): Promise<void> {
   })
 }
 
-describe.skipIf(!process.env.DEEPSEEK_API_KEY)('PTC mode: real model writes a program over real tools', () => {
+describe.skipIf(!process.env.KROKKI_API_KEY)('PTC mode: real model writes a program over real tools', () => {
   it('collapses the wire tool list to [run_code], bridges sub-calls, and returns curated output', async () => {
     workdir = await mkdtemp(join(tmpdir(), 'dsh-ptc-e2e-'))
     ctx = await ptcModeHarness(workdir)
-    const agent = ctx.agentLoop.create(SessionId('e2e-ptc'), { provider: 'deepseek-official', model: 'deepseek-v4-flash' })
+    const agent = ctx.agentLoop.create(SessionId('e2e-ptc'), { provider: 'krokki-official', model: 'deepseek-v4-flash' })
 
     agent.followup(createUserMessage({
       content: [{
@@ -408,7 +428,7 @@ describe.skipIf(!process.env.DEEPSEEK_API_KEY)('PTC mode: real model writes a pr
     const handle = await ctx.agents.create({
       sessionId: SessionId('e2e-ptc-workspace-session'),
       meta: { cwd: workdir },
-      agentOptions: { provider: 'deepseek-official', model: 'deepseek-v4-flash' },
+      agentOptions: { provider: 'krokki-official', model: 'deepseek-v4-flash' },
     })
 
     handle.agent.followup(createUserMessage({

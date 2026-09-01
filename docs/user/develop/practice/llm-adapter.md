@@ -144,12 +144,11 @@ The first argument lists provider routes handled by the adapter. `GenerateOption
 
 ## Reference implementations
 
-The repository contains complete implementations:
+The repository contains a complete implementation:
 
-- `packages/llm/llm-deepseek/` — DeepSeek API adapter using the OpenAI-compatible format
-- `packages/llm/llm-pi-ai/` — Pi AI adapter using a different API format
+- `packages/llm/llm-pi-ai/` — the KROKKI provider adapter, wrapping the pi-ai openai-completions route
 
-Compare the two shipped adapters to see the same harness contract implemented over different provider SDKs.
+Study the shipped adapter to see the harness contract implemented over a provider SDK.
 
 ## Error handling
 

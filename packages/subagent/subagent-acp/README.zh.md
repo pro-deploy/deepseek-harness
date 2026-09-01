@@ -58,7 +58,7 @@ DeepSeek Harness 子进程使用产品启动器和一个显式的绝对路径 `D
     permission: reject
     env:
       DSH_HOME: /absolute/path/to/isolated-child-home
-      DEEPSEEK_API_KEY: !!js process.env.DEEPSEEK_API_KEY
+      KROKKI_API_KEY: !!js process.env.KROKKI_API_KEY
 ```
 
 ### 你会得到什么

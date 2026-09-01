@@ -9,15 +9,15 @@ const missingCredential: CredentialInfo = { configured: false, writable: true }
 function row(overrides: Partial<ProviderRow> = {}): ProviderRow {
   return {
     entry: {
-      provider: 'deepseek-official',
-      displayName: 'DeepSeek',
-      settingsNs: 'llm-deepseek',
-      settingsPath: [],
+      provider: 'krokki-official',
+      displayName: 'KROKKI',
+      settingsNs: 'llm-pi-ai',
+      settingsPath: ['providers', 'krokki-official'],
       active: true,
     },
     configured: true,
     removable: false,
-    apiKeyEnv: 'DEEPSEEK_API_KEY',
+    apiKeyEnv: 'KROKKI_API_KEY',
     credential: missingCredential,
     ...overrides,
   }

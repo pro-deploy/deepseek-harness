@@ -1,13 +1,13 @@
 # Keyless replay counterpart of session-sandbox-root.cordis.yml: the replay
 # swap, recorded model pin, and distinct sandbox fallback form one profile patch.
-- id: llm-deepseek
-  name: '@deepseek-ai/dsh-llm-deepseek'
+- id: llm-pi-ai
+  name: '@deepseek-ai/dsh-llm-pi-ai'
   disabled: true
 
 - id: agent-default-model
   name: '@deepseek-ai/dsh-agent-default-model'
   config:
-    provider: deepseek-official
+    provider: krokki-official
     model: deepseek-v4-flash
 
 - id: session-persistence-jsonl
@@ -51,8 +51,8 @@
       name: '@deepseek-ai/dsh-llm-replay'
       config:
         providers:
-          - id: deepseek-official
-            name: DeepSeek
+          - id: krokki-official
+            name: KROKKI
             models:
               - id: deepseek-v4-flash
               - id: deepseek-v4-pro

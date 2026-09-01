@@ -50,12 +50,12 @@ async function expectQuiescent(handles: readonly SubprocessHandle[]): Promise<vo
   }
 }
 
-describe.skipIf(!process.env.DEEPSEEK_API_KEY)(
+describe.skipIf(!process.env.KROKKI_API_KEY)(
   'Codex provider with real DeepSeek API',
   () => {
     it('returns one unique nonce through the production provider and real Codex', async () => {
-      const apiKey = process.env.DEEPSEEK_API_KEY
-      if (apiKey === undefined) throw new Error('e2e ran without DEEPSEEK_API_KEY')
+      const apiKey = process.env.KROKKI_API_KEY
+      if (apiKey === undefined) throw new Error('e2e ran without KROKKI_API_KEY')
       const root = mkdtempSync(join(tmpdir(), 'dsh-codex-deepseek-e2e-'))
       roots.push(root)
       const workspace = join(root, 'workspace')
@@ -76,7 +76,7 @@ describe.skipIf(!process.env.DEEPSEEK_API_KEY)(
         '[model_providers.deepseek-e2e]',
         'name = "DeepSeek E2E bridge"',
         `base_url = "${bridge.baseUrl}"`,
-        'env_key = "DEEPSEEK_API_KEY"',
+        'env_key = "KROKKI_API_KEY"',
         'wire_api = "responses"',
         'requires_openai_auth = false',
         '',
@@ -85,7 +85,7 @@ describe.skipIf(!process.env.DEEPSEEK_API_KEY)(
         '',
       ].join('\n'))
       const env = {
-        DEEPSEEK_API_KEY: apiKey,
+        KROKKI_API_KEY: apiKey,
         CODEX_HOME: codexHome,
         HOME: root,
         XDG_CONFIG_HOME: join(root, 'xdg-config'),

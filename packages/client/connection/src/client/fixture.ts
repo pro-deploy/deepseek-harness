@@ -567,8 +567,8 @@ const OPENAI_REASONING = {
 function fixtureModelGroups(): ModelProviderGroup[] {
   return [
     {
-      id: 'deepseek-official',
-      name: 'DeepSeek',
+      id: 'krokki-official',
+      name: 'KROKKI',
       models: [
         {
           id: 'deepseek-v4-flash',
@@ -639,7 +639,7 @@ function buildAlphaLog(): SessionEvent[] {
   // Completed fixture requests retain the route capacity recorded with them.
   push({
     type: 'request/context',
-    data: { provider: 'deepseek-official', model: 'deepseek-v4-flash', contextWindow: 128_000 },
+    data: { provider: 'krokki-official', model: 'deepseek-v4-flash', contextWindow: 128_000 },
   })
   for (let turn = 0; turn < 60; turn++) {
     push({ type: 'turn/start', data: { turn } })
@@ -1768,7 +1768,7 @@ function createFixtureWorld(options: FixtureOptions): FixtureWorld {
   const logs = new Map<SessionId, SessionEvent[]>([[sid('fx-alpha'), buildAlphaLog()]])
   const modelSelections = new Map<SessionId, ModelSelection>(sessions.map(session => [
     session.sessionId,
-    { provider: 'deepseek-official', model: 'deepseek-v4-flash' },
+    { provider: 'krokki-official', model: 'deepseek-v4-flash' },
   ]))
   const attachments = new Map<string, { attachment: ImageAttachmentRef; data: string }>([[
     String(FIXTURE_IMAGE_REF.attachmentId),
@@ -1778,7 +1778,7 @@ function createFixtureWorld(options: FixtureOptions): FixtureWorld {
   const fixtureCredentials = new Map<string, true>([
     // The assembled fixture represents an already-configured shipped
     // DeepSeek route so unrelated GUI journeys do not enter first-run setup.
-    ['DEEPSEEK_API_KEY', true],
+    ['KROKKI_API_KEY', true],
   ])
 
   /** Canonical fixture implementation of the generated Settings Remote contract. */
@@ -1795,7 +1795,7 @@ function createFixtureWorld(options: FixtureOptions): FixtureWorld {
           namespaces: [{
             ns: 'llm-deepseek',
             schema: {},
-            value: { apiKeyEnv: 'DEEPSEEK_API_KEY' },
+            value: { apiKeyEnv: 'KROKKI_API_KEY' },
             applies: 'live',
             secrets: [{ path: ['apiKey'], set: false }],
             revision: 0,
@@ -2810,7 +2810,7 @@ function createFixtureWorld(options: FixtureOptions): FixtureWorld {
         sessionId: requestedId ?? sid(`fx-${nextSession++}`), updatedAt: Date.now(), running: false, blank: true, cwd,
       }
       sessions.push(created)
-      modelSelections.set(created.sessionId, { provider: 'deepseek-official', model: 'deepseek-v4-flash' })
+      modelSelections.set(created.sessionId, { provider: 'krokki-official', model: 'deepseek-v4-flash' })
       const emitSession = (): void => {
         emitRemote('api-session/added', [created])
       }
@@ -3488,8 +3488,8 @@ function createFixtureWorld(options: FixtureOptions): FixtureWorld {
         case 'session/modelCatalog': return Promise.resolve({
           ok: true,
           value: {
-            default: { provider: 'deepseek-official', model: 'deepseek-v4-flash' },
-            routableProviders: ['deepseek-official', 'openai', 'acme-gateway'],
+            default: { provider: 'krokki-official', model: 'deepseek-v4-flash' },
+            routableProviders: ['krokki-official', 'openai', 'acme-gateway'],
             groups: fixtureModelGroups(),
             failures: [],
           },
@@ -3497,7 +3497,7 @@ function createFixtureWorld(options: FixtureOptions): FixtureWorld {
         case 'llm/listProviders': return Promise.resolve({
           ok: true,
           value: [
-            { id: 'deepseek-official', name: 'DeepSeek' },
+            { id: 'krokki-official', name: 'KROKKI' },
             { id: 'openai', name: 'openai' },
             { id: 'acme-gateway', name: 'Acme Gateway' },
           ],
@@ -3505,7 +3505,7 @@ function createFixtureWorld(options: FixtureOptions): FixtureWorld {
         case 'llm/listConfigurableProviders': return Promise.resolve({
           ok: true,
           value: [
-            { provider: 'deepseek-official', displayName: 'DeepSeek', settingsNs: 'llm-deepseek', settingsPath: [] },
+            { provider: 'krokki-official', displayName: 'KROKKI', settingsNs: 'llm-deepseek', settingsPath: [] },
             { provider: 'openai', displayName: 'openai', settingsNs: 'llm-pi-ai', settingsPath: ['providers', 'openai'], declared: false },
             { provider: 'anthropic', displayName: 'anthropic', settingsNs: 'llm-pi-ai', settingsPath: ['providers', 'anthropic'], declared: false },
             { provider: 'acme-gateway', displayName: 'Acme Gateway', settingsNs: 'llm-pi-ai', settingsPath: ['providers', 'acme-gateway'], declared: true },

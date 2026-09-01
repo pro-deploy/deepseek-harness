@@ -16,11 +16,6 @@ import { createSnapshotStore } from '@deepseek-ai/dsh-client-store'
 import type { SettingsDescribeFace } from '@deepseek-ai/dsh-client-ui-settings/client'
 import type { SettingsSchemaOperations } from './schema-operations.ts'
 
-/**
- * Any route key walks a dict schema to the same profile node, so the lookup
- * names one that cannot collide with a configured route.
- */
-const PROBE_ROUTE = '\u0000probe'
 
 /** One provider row after joining the configurable directory with live routes. */
 export interface ProviderDirectoryEntry {
@@ -112,25 +107,6 @@ export function deriveKeyRef(provider: string): string {
   return `${provider.toUpperCase().replace(/[^A-Z0-9]+/g, '_')}_API_KEY`
 }
 
-/**
- * The wire protocols a hand-declared route may name, read out of the owning
- * namespace's own schema. This stays a schema read rather than a wire field so
- * the choices the page offers cannot drift from the ones the adapter accepts:
- * both come from the same `Config`.
- * @param namespace - the namespace view whose schema declares the profile shape.
- * @param schema - settings schema operations.
- * @returns the protocol identifiers, or an empty list when the schema has none.
- */
-export function protocolChoices(
-  namespace: SettingsNamespaceView | undefined,
-  schema: SettingsSchemaOperations,
-): string[] {
-  if (namespace === undefined) return []
-  const node = schema.nodeAtPath(schema.rehydrate(namespace.schema), ['providers', PROBE_ROUTE, 'api'])
-  const list = (node as { type?: string; list?: readonly { value?: unknown }[] } | undefined)
-  if (list?.type !== 'union' || list.list === undefined) return []
-  return list.list.map(entry => entry.value).filter((value): value is string => typeof value === 'string')
-}
 
 /** The credential reference a resolved profile names (its `apiKeyEnv` field). */
 function apiKeyEnvOf(
@@ -304,9 +280,8 @@ export function onboardingReadiness(state: ModelsSettingsState): OnboardingReadi
   }
   if (state.rows.some(providerUsable)) return { kind: 'provider-ready' }
   const row = state.rows.find(candidate =>
-    candidate.entry.provider === 'deepseek-official'
-    && candidate.entry.settingsNs === 'llm-deepseek'
-    && candidate.entry.settingsPath.length === 0)
+    candidate.entry.provider === 'krokki-official'
+    && candidate.entry.settingsNs === 'llm-pi-ai')
   if (row === undefined) return { kind: 'adapter-absent' }
   if (!row.entry.active) {
     return {

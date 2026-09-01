@@ -24,8 +24,8 @@ import { zh } from '../src/client/locales.ts'
 const sid = (k: string): SessionId => k as SessionId
 
 const GROUPS = [{
-  id: 'deepseek-official',
-  name: 'DeepSeek',
+  id: 'krokki-official',
+  name: 'KROKKI',
   models: [
     {
       id: 'deepseek-v4-flash',
@@ -57,7 +57,7 @@ const GROUPS = [{
 /** Boot the plugin over fake faces + a stateful fake host (current moves on selectModel). */
 async function bench() {
   const ctx = new Context()
-  let defaultSelection: ModelSelection = { provider: 'deepseek-official', model: 'deepseek-v4-flash' }
+  let defaultSelection: ModelSelection = { provider: 'krokki-official', model: 'deepseek-v4-flash' }
   let selected = defaultSelection
   const calls = { models: 0, select: 0 }
   const projections = new Map<SessionId, SnapshotStore<ModelSelectionProjection | undefined>>()
@@ -71,7 +71,7 @@ async function bench() {
         ok: true as const,
         value: {
           default: defaultSelection,
-          routableProviders: routable ? ['deepseek-official'] : [],
+          routableProviders: routable ? ['krokki-official'] : [],
           groups: GROUPS,
           failures: [],
         },
@@ -184,7 +184,7 @@ describe('ui-model-selection dual entry', () => {
     b.mint('s1')
     const options = await b.contribution().ui.options(projection('s1'), new AbortController().signal)
     expect(options.map((o: SelectOption) => o.label)).toEqual(['DeepSeek-V4-Flash', 'DeepSeek-V4-Pro'])
-    expect(options[0]).toMatchObject({ active: true, detail: 'DeepSeek' })
+    expect(options[0]).toMatchObject({ active: true, detail: 'KROKKI' })
     expect(options[1]?.active).toBeUndefined()
   })
 
@@ -194,17 +194,17 @@ describe('ui-model-selection dual entry', () => {
     const seatFace = b.seat().inject!(sid('s1'))
     // Switch through the SEAT entry.
     expect(await seatFace.select({
-      provider: 'deepseek-official',
+      provider: 'krokki-official',
       model: 'deepseek-v4-pro',
       reasoningEffort: 'max',
     })).toBe(true)
     expect(b.hostCurrent()).toEqual({
-      provider: 'deepseek-official',
+      provider: 'krokki-official',
       model: 'deepseek-v4-pro',
       reasoningEffort: 'max',
     })
     expect(seatFace.directory.getSnapshot().current).toEqual({
-      provider: 'deepseek-official',
+      provider: 'krokki-official',
       model: 'deepseek-v4-pro',
       reasoningEffort: 'max',
     })
@@ -221,7 +221,7 @@ describe('ui-model-selection dual entry', () => {
     const pro = options.find((o: SelectOption) => o.label === 'DeepSeek-V4-Pro')!
     await b.contribution().ui.onSelect(pro, projection('s1'))
     expect(seatFace.directory.getSnapshot().current).toEqual({
-      provider: 'deepseek-official',
+      provider: 'krokki-official',
       model: 'deepseek-v4-pro',
       reasoningEffort: 'high',
     })
@@ -249,17 +249,17 @@ describe('ui-model-selection dual entry', () => {
     const b = await bench()
     b.mint('s1')
     const face = b.seat().inject!(sid('s1'))
-    await face.select({ provider: 'deepseek-official', model: 'deepseek-v4-pro' })
-    b.setHostCurrent({ provider: 'deepseek-official', model: 'deepseek-v4-flash' })
+    await face.select({ provider: 'krokki-official', model: 'deepseek-v4-pro' })
+    b.setHostCurrent({ provider: 'krokki-official', model: 'deepseek-v4-flash' })
 
     b.ctx.emit('connection/reset')
     expect(face.directory.getSnapshot()).toMatchObject({
-      current: { provider: 'deepseek-official', model: 'deepseek-v4-pro' },
+      current: { provider: 'krokki-official', model: 'deepseek-v4-pro' },
       status: 'ready',
     })
     face.load()
     expect(face.directory.getSnapshot()).toMatchObject({
-      current: { provider: 'deepseek-official', model: 'deepseek-v4-pro' },
+      current: { provider: 'krokki-official', model: 'deepseek-v4-pro' },
       status: 'ready',
     })
   })
@@ -273,17 +273,17 @@ describe('ui-model-selection dual entry', () => {
 
     b.remote.emit('settings/document-updated', ['llm-deepseek', 1])
     b.setProjected(sid('s1'), {
-      lastUsed: { provider: 'deepseek-official', model: 'deepseek-v4-flash' },
-      next: { provider: 'deepseek-official', model: 'deepseek-v4-pro' },
+      lastUsed: { provider: 'krokki-official', model: 'deepseek-v4-flash' },
+      next: { provider: 'krokki-official', model: 'deepseek-v4-pro' },
     })
     expect(face.directory.getSnapshot()).toMatchObject({
-      current: { provider: 'deepseek-official', model: 'deepseek-v4-flash' },
+      current: { provider: 'krokki-official', model: 'deepseek-v4-flash' },
       status: 'ready',
     })
 
     await vi.waitFor(() => {
       expect(face.directory.getSnapshot()).toMatchObject({
-        current: { provider: 'deepseek-official', model: 'deepseek-v4-pro' },
+        current: { provider: 'krokki-official', model: 'deepseek-v4-pro' },
         status: 'ready',
       })
     })
@@ -336,7 +336,7 @@ describe('ui-model-selection dual entry', () => {
     // A model the route serves but no longer advertises: the seat prompts for
     // a selection, the composer stays usable. Blocking here would break a
     // supported configuration (a narrowed `models` list over a live route).
-    b.setHostCurrent({ provider: 'deepseek-official', model: 'unlisted' })
+    b.setHostCurrent({ provider: 'krokki-official', model: 'unlisted' })
     face.load()
     await Promise.resolve()
     await Promise.resolve()

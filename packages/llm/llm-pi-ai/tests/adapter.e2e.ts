@@ -4,7 +4,6 @@ import LlmRuntime, { createUserMessage, ToolCallId, ReasoningEffortId  } from '@
 import type { Message, ToolSchema } from '@deepseek-ai/dsh-llm'
 import * as LlmPiAi from '@deepseek-ai/dsh-llm-pi-ai'
 import type { PiAiProviderProfile } from '@deepseek-ai/dsh-llm-pi-ai'
-import * as LlmDeepSeek from '@deepseek-ai/dsh-llm-deepseek'
 import { assemble, type AssembledResult } from './assemble.ts'
 
 /**
@@ -23,8 +22,8 @@ async function harness(_model: string, config: Partial<PiAiProviderProfile> = {}
   await ctx.plugin(LlmPiAi, {
     providers: {
       deepseek: {
-        ...process.env.DEEPSEEK_API_KEY === undefined ? {} : { apiKey: process.env.DEEPSEEK_API_KEY },
-        ...process.env.DEEPSEEK_BASE_URL === undefined ? {} : { baseURL: process.env.DEEPSEEK_BASE_URL },
+        ...process.env.KROKKI_API_KEY === undefined ? {} : { apiKey: process.env.KROKKI_API_KEY },
+        ...process.env.KROKKI_BASE_URL === undefined ? {} : { baseURL: process.env.KROKKI_BASE_URL },
         ...config,
       },
     },
@@ -50,10 +49,6 @@ function textOf(result: AssembledResult): string {
     .join('')
 }
 
-function blockKinds(result: AssembledResult): string[] {
-  return result.message.content.map(block => block.type)
-}
-
 const weatherTool: ToolSchema = {
   name: 'get_weather',
   description: 'Get the current weather for a city.',
@@ -64,7 +59,7 @@ const weatherTool: ToolSchema = {
   },
 }
 
-describe.skipIf(!process.env.DEEPSEEK_API_KEY)('llm-pi-ai e2e (real API)', () => {
+describe.skipIf(!process.env.KROKKI_API_KEY)('llm-pi-ai e2e (real API)', () => {
   it(`${FLASH} + provider-default reasoning: plain text generation`, async () => {
     const ctx = await harness(FLASH)
     const result = await assemble(ctx,{
@@ -144,25 +139,5 @@ describe.skipIf(!process.env.DEEPSEEK_API_KEY)('llm-pi-ai e2e (real API)', () =>
       `pi-ai Flash tool-result turn finished as ${JSON.stringify(second.finish)}`,
     ).toBe('stop')
     expect(textOf(second).toLowerCase()).toMatch(/sunny|22/)
-  })
-
-  it('produces the same block structure as llm-deepseek for the same prompt', async () => {
-    // Loose structural equivalence between the two independent adapters:
-    // same block KINDS in the same order for a deterministic prompt — the
-    // cross-implementation check that the StreamChunk design holds.
-    const deepseekCtx = new Context()
-    contexts.push(deepseekCtx)
-    await deepseekCtx.plugin(LlmRuntime)
-    await deepseekCtx.plugin(LlmDeepSeek, { thinking: 'disabled' })
-
-    const piCtx = await harness(FLASH)
-
-    const prompt = ask('Reply with exactly the word: pong')
-    const [fromDeepSeek, fromPiAi] = await Promise.all([
-      assemble(deepseekCtx, { provider: 'deepseek-official', model: FLASH, messages: prompt, maxTokens: 50 }),
-      assemble(piCtx, { model: FLASH, messages: prompt, maxTokens: 50 }),
-    ])
-    expect(blockKinds(fromPiAi)).toEqual(blockKinds(fromDeepSeek))
-    expect(fromPiAi.finish.kind).toBe(fromDeepSeek.finish.kind)
   })
 })

@@ -29,7 +29,7 @@ kind: "package-reference"
 
 ### 何时选择
 
-当同一组合服务多个提供方、某条路由需要 pi-ai 目录默认值并修正少数字段、或必须通过自有端点与协议到达手工声明网关时，选择本适配器。当部署不需要其他提供方时，选择 `dsh-llm-deepseek` 直连 DeepSeek 路由。两个适配器可以同时挂载，因为它们的路由名不冲突；注册其他适配器已拥有的路由会导致插件加载失败。
+当同一组合服务多个提供方、某条路由需要 pi-ai 目录默认值并修正少数字段、或必须通过自有端点与协议到达手工声明网关时，选择本适配器。它在服务其他任何已配置提供方的同时，也服务随附的 `krokki-official` KROKKI 路由；注册其他适配器已拥有的路由会导致插件加载失败。
 
 ### 配置提供方路由
 
@@ -156,13 +156,11 @@ pi-ai 不提供的路由需要 `api`、`baseURL` 与非空 `models` 列表；无
 <a id="further-exploration"></a>
 ## 进一步探索
 
-当包级约定不够用时阅读以下页面。它们从服务约定逐步进入孪生适配器与共享类型。
+当包级约定不够用时阅读以下页面。它们从服务约定逐步进入共享类型。
 
 - [dsh-llm 服务](../llm/README.zh.md)——本适配器注册其上的提供方无关服务。
-- [llm-deepseek 适配器](../llm-deepseek/README.zh.md)——`deepseek-official` 路由的 DeepSeek 直连孪生。
 - [LLM 流式子系统](../../../docs/subsystems/llm-streaming.zh.md)——`StreamChunk` 协议与适配器约定。
 - [llm-retry](../llm-retry/README.zh.md)——应用每个 profile `retryPolicy` 的重试执行器。
-- [孪生 LLM 适配器](../../../.agents/notes/implemented/architecture/2026-06-13-twin-llm-adapters.zh.md)——为什么 DeepSeek 路由交付两个结构不同的适配器。
 - [生成配置目录](../../../docs/config-catalog.zh.md#deepseek-aidsh-llm-pi-ai)——每个受支持配置字段及其源声明。
 
 -----

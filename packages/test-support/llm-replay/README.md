@@ -36,8 +36,8 @@ With `providers` configured, the plugin registers a replay-only adapter whose ca
   name: '@deepseek-ai/dsh-llm-replay'
   config:
     providers:
-      - id: deepseek-official
-        name: DeepSeek
+      - id: krokki-official
+        name: KROKKI
         retryPolicy:
           mode: normal
           backoff:
@@ -73,9 +73,7 @@ A scenario where a parent agent delegates to in-process subagents records one lo
 
 ### Failure modes and overrides
 
-When replay serves `deepseek-official` with `ctx.deepseekLlmApiExtensions`, it prepares and accepts those fields after selecting a valid script entry and before yielding the first chunk. This mirrors the live adapter's post-2xx commit point, so durable acceptance watermarks and SDK event notifications behave the same in recording and replay. Replay supplies a synthetic `{ messages: [] }` base body: it proves acceptance side effects, not prepared field bytes.
-
-Two failure modes are not reconstructable from `assistant/chunk` alone — a pure throw before any chunk (for example an HTTP 401, where the log holds only a `turn/end {error}`) and a cancel/hang. A scenario that needs those supplies an optional sidecar (`<scenario>/replay.override.json`) that either replaces the derived script with a bare `ReplayEntry[]` or augments it with `{ patches: [{ at, entry }] }`, which keeps every derived call and swaps the named 0-based call indexes; `at` equal to the derived length appends the retry attempt after an injected transient throw. A `throw` entry accepts DeepSeek request extensions when it has prefix chunks; a zero-chunk throw defaults to pre-2xx non-acceptance and may set `accepted: true` for a post-2xx failure. A `hang` entry may name `readyFile`, which replay writes before waiting for cancellation so an external driver can cancel deterministically.
+Two failure modes are not reconstructable from `assistant/chunk` alone — a pure throw before any chunk (for example an HTTP 401, where the log holds only a `turn/end {error}`) and a cancel/hang. A scenario that needs those supplies an optional sidecar (`<scenario>/replay.override.json`) that either replaces the derived script with a bare `ReplayEntry[]` or augments it with `{ patches: [{ at, entry }] }`, which keeps every derived call and swaps the named 0-based call indexes; `at` equal to the derived length appends the retry attempt after an injected transient throw. A `hang` entry may name `readyFile`, which replay writes before waiting for cancellation so an external driver can cancel deterministically.
 
 ### What can go wrong
 

@@ -81,10 +81,9 @@ export function DeepSeekOnboardingDialog(props: DeepSeekOnboardingDialogProps): 
   }
 
   const row = state.rows.find(candidate =>
-    candidate.entry.provider === 'deepseek-official'
-    && candidate.entry.settingsNs === 'llm-deepseek'
-    && candidate.entry.settingsPath.length === 0)
-  const namespace = state.namespaces.get('llm-deepseek')
+    candidate.entry.provider === 'krokki-official'
+    && candidate.entry.settingsNs === 'llm-pi-ai')
+  const namespace = state.namespaces.get('llm-pi-ai')
   /* v8 ignore next 2 -- credential-missing is derived only from this exact joined row. */
   if (row === undefined || namespace === undefined) return null
 
@@ -110,7 +109,6 @@ export function DeepSeekOnboardingDialog(props: DeepSeekOnboardingDialogProps): 
           t={t}
           readOnly={false}
           hideTitle
-          credentialOnly
           credentialRequired
           autoFocusCredential
           cancelLabelKey="onboardingLater"

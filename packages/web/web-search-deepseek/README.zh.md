@@ -9,7 +9,7 @@ kind: "package-reference"
 
 ## 概述
 
-有了 `dsh-web-search-deepseek`，harness 可以通过 DeepSeek 原生搜索检索 web，使用部署已有的 `DEEPSEEK_API_KEY`。当部署希望使用 DeepSeek 原生搜索、并接受一次搜索在延迟与 token 上消耗一个完整模型轮次时选择它，因为 DeepSeek 不提供专用搜索端点。结果来自 DeepSeek 返回的结构化搜索块，绝不会从回复文本中抓取。凭据缺失时调用以结构化错误失败；响应缺少搜索结果块时会响亮地失败，而非降级。面向模型的 `web_search` 工具位于 `dsh-tool-web`。
+有了 `dsh-web-search-deepseek`，harness 可以通过 DeepSeek 原生搜索检索 web，使用部署已有的 `KROKKI_API_KEY`。当部署希望使用 DeepSeek 原生搜索、并接受一次搜索在延迟与 token 上消耗一个完整模型轮次时选择它，因为 DeepSeek 不提供专用搜索端点。结果来自 DeepSeek 返回的结构化搜索块，绝不会从回复文本中抓取。凭据缺失时调用以结构化错误失败；响应缺少搜索结果块时会响亮地失败，而非降级。面向模型的 `web_search` 工具位于 `dsh-tool-web`。
 
 ## 目录
 
@@ -25,29 +25,29 @@ kind: "package-reference"
 <a id="use-this-package"></a>
 ## 使用本包
 
-在已加载 web 服务的组合中挂载本提供方；它以 `deepseek-official` 搜索提供方身份注册，因此当它是唯一可用的搜索后端时，`ctx.web.search()` 会自动解析到它——也可以用 `searchProvider: deepseek-official` 固定。
+在已加载 web 服务的组合中挂载本提供方；它以 `krokki-official` 搜索提供方身份注册，因此当它是唯一可用的搜索后端时，`ctx.web.search()` 会自动解析到它——也可以用 `searchProvider: krokki-official` 固定。
 
 ### 何时选择
 
-当部署希望使用 DeepSeek 原生服务端 web 搜索、且已持有 `DEEPSEEK_API_KEY` 时选择此后端——提供方复用该凭据引用。一次搜索比专用检索端点更重：DeepSeek 在完整模型轮次内执行搜索，因此每次搜索都要预期一次 Messages 调用的延迟与生成 token，每次请求最多 `maxUses` 次服务端搜索。当单次搜索的成本或延迟占主导时避免使用它。
+当部署希望使用 DeepSeek 原生服务端 web 搜索、且已持有 `KROKKI_API_KEY` 时选择此后端——提供方复用该凭据引用。一次搜索比专用检索端点更重：DeepSeek 在完整模型轮次内执行搜索，因此每次搜索都要预期一次 Messages 调用的延迟与生成 token，每次请求最多 `maxUses` 次服务端搜索。当单次搜索的成本或延迟占主导时避免使用它。
 
 ### 最小配置
 
-加载 web 服务与本提供方；密钥在已挂载 `ctx.credentials` 服务时从其解析，否则从进程环境解析。搜索端点使用 Anthropic 兼容基址（`https://api.deepseek.com/anthropic/v1`），不同于 LLM（大语言模型）适配器使用的 chat-completions 基址——绝不复用 `$DEEPSEEK_BASE_URL`。
+加载 web 服务与本提供方；密钥在已挂载 `ctx.credentials` 服务时从其解析，否则从进程环境解析。搜索端点使用 Anthropic 兼容基址（`https://api.krokki.com/anthropic/v1`），不同于 LLM（大语言模型）适配器使用的 chat-completions 基址——绝不复用 `$KROKKI_BASE_URL`。
 
 ```yaml
 - name: '@deepseek-ai/dsh-web'
 - name: '@deepseek-ai/dsh-web-search-deepseek'
   config:
-    apiKeyEnv: DEEPSEEK_API_KEY
+    apiKeyEnv: KROKKI_API_KEY
     baseURL: https://gateway.internal/anthropic/v1
 ```
 
 | 字段 | 默认值 | 含义 |
 |---|---|---|
 | `apiKey` | 未设置 | DeepSeek API 密钥字面值；优先使用 `apiKeyEnv`，避免密钥进入配置。非空字面值优先 |
-| `apiKeyEnv` | `DEEPSEEK_API_KEY` | 每次搜索通过 `ctx.credentials` 解析的凭据引用；没有该服务时从进程环境解析。值缺失时调用以 `WEB_PROVIDER_CREDENTIAL_MISSING` 失败 |
-| `baseURL` | `https://api.deepseek.com/anthropic/v1` | Anthropic 兼容端点基址；追加 `/messages`。缺省时回退到 `$DEEPSEEK_SEARCH_BASE_URL`；无法解析时提供方不可用 |
+| `apiKeyEnv` | `KROKKI_API_KEY` | 每次搜索通过 `ctx.credentials` 解析的凭据引用；没有该服务时从进程环境解析。值缺失时调用以 `WEB_PROVIDER_CREDENTIAL_MISSING` 失败 |
+| `baseURL` | `https://api.krokki.com/anthropic/v1` | Anthropic 兼容端点基址；追加 `/messages`。缺省时回退到 `$DEEPSEEK_SEARCH_BASE_URL`；无法解析时提供方不可用 |
 | `model` | `deepseek-v4-flash` | Anthropic 格式模型名称 |
 | `apiVersion` | `2023-06-01` | `anthropic-version` 标头值 |
 | `maxTokens` | `4096` | Messages 请求生成 token 的正整数上限 |
@@ -82,7 +82,7 @@ kind: "package-reference"
 本提供方建立在两项承诺之上：
 
 - **只取结构化块。** DeepSeek 在服务端执行搜索并返回结构化的 `web_search_tool_result` 块；提供方解析这些块，绝不从模型文本中抓取 URL。严格模式下，没有此类块的响应会抛出 `WEB_PROVIDER_ERROR`，而非降级。
-- **一个凭据，逐次解析。** 提供方复用 `DEEPSEEK_API_KEY` 引用（不新增密钥），但不复用 `$DEEPSEEK_BASE_URL`，因为搜索使用 Anthropic 兼容 Messages API。已挂载的凭据服务具有权威性；没有该服务时回退到启动进程的环境。按次解析意味着在 Web 的 Models 页中存储或轮换的密钥无需重启，即可用于下一次搜索。
+- **一个凭据，逐次解析。** 提供方复用 `KROKKI_API_KEY` 引用（不新增密钥），但不复用 `$KROKKI_BASE_URL`，因为搜索使用 Anthropic 兼容 Messages API。已挂载的凭据服务具有权威性；没有该服务时回退到启动进程的环境。按次解析意味着在 Web 的 Models 页中存储或轮换的密钥无需重启，即可用于下一次搜索。
 
 ### 源码地图
 

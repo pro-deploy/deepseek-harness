@@ -5,18 +5,19 @@
 - id: headless-runner
   disabled: true
 
-- id: llm-deepseek
+- id: llm-pi-ai
   config:
-    baseURL: !!js process.env.DSH_SNAPSHOT_BASE_URL
-    thinking: enabled
-    reasoningEffort: low
-    streamIdleTimeoutMs: 150
+    providers:
+      krokki-official:
+        baseURL: !!js process.env.DSH_SNAPSHOT_BASE_URL
+        reasoning: low
+        streamIdleTimeoutMs: 150
 
 - id: agent-loop
   config:
     agents:
       - id: main
-        provider: deepseek-official
+        provider: krokki-official
         model: deepseek-v4-flash
         cwd: !!js process.cwd()
 

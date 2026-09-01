@@ -6,7 +6,7 @@ import type {
 } from 'node:http'
 import { completeResponsesEvents } from './responses-fixture.ts'
 
-const OFFICIAL_DEEPSEEK_BASE_URL = 'https://api.deepseek.com'
+const OFFICIAL_KROKKI_BASE_URL = 'https://api.krokki.com'
 const MAX_REQUEST_BYTES = 1_048_576
 
 /** One running test-only Responses-to-DeepSeek bridge. */
@@ -54,9 +54,9 @@ function taskText(body: Record<string, unknown>): string {
 }
 
 function deepSeekBaseUrl(): string {
-  const configured = (process.env.DEEPSEEK_BASE_URL ?? OFFICIAL_DEEPSEEK_BASE_URL)
+  const configured = (process.env.KROKKI_BASE_URL ?? OFFICIAL_KROKKI_BASE_URL)
     .replace(/\/+$/, '')
-  if (configured !== OFFICIAL_DEEPSEEK_BASE_URL) {
+  if (configured !== OFFICIAL_KROKKI_BASE_URL) {
     throw new Error('Codex DeepSeek e2e requires the official DeepSeek base URL')
   }
   return configured

@@ -10,5 +10,5 @@
         maxInputBytes: 4096
         maxOutputTokens: 32
         timeoutMs: 5000
-        provider: deepseek-official
+        provider: krokki-official
         model: deepseek-v4-flash

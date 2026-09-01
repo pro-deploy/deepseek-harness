@@ -829,12 +829,12 @@ def smoke_sdk_live() -> None:
     """Run a real-model, tool-using two-turn task through installed wheels."""
     from deepseek_harness import DeepSeekHarness
 
-    api_key = os.environ.get("DEEPSEEK_API_KEY")
-    base_url = os.environ.get("DEEPSEEK_BASE_URL")
+    api_key = os.environ.get("KROKKI_API_KEY")
+    base_url = os.environ.get("KROKKI_BASE_URL")
     if not api_key:
-        raise AssertionError("sdk-live requires DEEPSEEK_API_KEY")
+        raise AssertionError("sdk-live requires KROKKI_API_KEY")
     if not base_url:
-        raise AssertionError("sdk-live requires an explicit DEEPSEEK_BASE_URL")
+        raise AssertionError("sdk-live requires an explicit KROKKI_BASE_URL")
 
     with tempfile.TemporaryDirectory(prefix="dsh-sdk-live-") as temporary:
         root = Path(temporary).resolve()
@@ -852,7 +852,7 @@ def smoke_sdk_live() -> None:
             f"If its only line is {LIVE_API_SENTINEL}, reply with exactly {LIVE_API_SENTINEL}."
         )
         with DeepSeekHarness(
-            provider="deepseek-official",
+            provider="krokki-official",
             model="deepseek-v4-flash",
             cwd=str(root),
             dsh_home=str(dsh_home),
@@ -925,7 +925,7 @@ def smoke_sdk_default(base_url: str) -> None:
         dsh_home = root / "home"
         sessions = dsh_home / "sessions"
         with DeepSeekHarness(
-            provider="deepseek-official",
+            provider="krokki-official",
             model="smoke-model",
             cwd=str(root),
             dsh_home=str(dsh_home),
@@ -955,7 +955,7 @@ def smoke_sdk_custom(base_url: str, executable: Path) -> None:
         sessions = dsh_home / "sessions"
         patch = write_advanced_profile_patch(root, "custom.patch.yml", sessions)
         with DeepSeekHarness(
-            provider="deepseek-official",
+            provider="krokki-official",
             model="smoke-model",
             cwd=str(root),
             dsh_bin=str(executable),
@@ -991,7 +991,7 @@ def smoke_sdk_minimal(base_url: str, executable: Path, update_snapshots: bool) -
         dsh_home = root / "home"
         sessions = dsh_home / "sessions"
         with DeepSeekHarness(
-            provider="deepseek-official",
+            provider="krokki-official",
             model="smoke-model",
             cwd=str(root),
             dsh_bin=str(executable),
@@ -1030,7 +1030,7 @@ def smoke_sdk_fs_search(base_url: str, executable: Path) -> None:
             {"id": "tool-fs-search", "config": {"sampleOverCapGlobResults": False}},
         ])
         with DeepSeekHarness(
-            provider="deepseek-official",
+            provider="krokki-official",
             model="smoke-model",
             cwd=str(root),
             dsh_bin=str(executable),
@@ -1063,7 +1063,7 @@ def smoke_sdk_mcp(base_url: str, executable: Path | None) -> None:
         patch = write_mcp_patch(root, sessions, server_script)
         discovery_log = server_script.with_suffix(".log")
         with DeepSeekHarness(
-            provider="deepseek-official",
+            provider="krokki-official",
             model="smoke-model",
             cwd=str(root),
             dsh_bin=None if executable is None else str(executable),
@@ -1146,7 +1146,7 @@ def smoke_sdk_profile_plugin(base_url: str) -> None:
             raise AssertionError(f"dsh plugin did not activate the external bundle: {manifest}")
 
         harness = DeepSeekHarness(
-            provider="deepseek-official",
+            provider="krokki-official",
             model="smoke-model",
             cwd=str(root),
             dsh_home=str(dsh_home),
@@ -1180,7 +1180,7 @@ def smoke_sdk_snapshot(base_url: str, executable: Path, update_snapshots: bool) 
         sessions = dsh_home / "sessions"
         patch = write_advanced_profile_patch(root, "snapshot.patch.yml", sessions)
         with DeepSeekHarness(
-            provider="deepseek-official",
+            provider="krokki-official",
             model="smoke-model",
             cwd=str(root),
             dsh_bin=str(executable),
@@ -1232,7 +1232,7 @@ def smoke_sdk_restart_snapshot(base_url: str, executable: Path, update_snapshots
 
         def run(prompt: str, session_id: str) -> "RunResult":
             with DeepSeekHarness(
-                provider="deepseek-official",
+                provider="krokki-official",
                 model="smoke-model",
                 cwd=str(root),
                 dsh_bin=str(executable),
@@ -1289,8 +1289,8 @@ def smoke_direct(base_url: str, executable: Path) -> None:
             "DSH_HOME": str(dsh_home),
             "DSH_PERMISSION_MODE": "danger-full-access",
             "DSH_TELEMETRY_DISABLED": "1",
-            "DEEPSEEK_API_KEY": "sk-keyless-smoke",
-            "DEEPSEEK_BASE_URL": base_url,
+            "KROKKI_API_KEY": "sk-keyless-smoke",
+            "KROKKI_BASE_URL": base_url,
         }
         peer = RuntimePeer(
             [str(executable), "--profile", "sdk", "--patch", str(patch)],
@@ -1298,7 +1298,7 @@ def smoke_direct(base_url: str, executable: Path) -> None:
             environment,
         )
         try:
-            peer.send({"jsonrpc": "2.0", "id": "initialize", "method": "initialize", "params": {"cwd": str(root), "provider": "deepseek-official", "model": "smoke-model"}})
+            peer.send({"jsonrpc": "2.0", "id": "initialize", "method": "initialize", "params": {"cwd": str(root), "provider": "krokki-official", "model": "smoke-model"}})
             peer.read_until(lambda message: message.get("id") == "initialize")
             peer.send({
                 "jsonrpc": "2.0",

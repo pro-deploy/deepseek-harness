@@ -52,7 +52,7 @@ export interface SdkRunSpec {
   maxTokens?: number
   /**
    * Extra environment variables to ADD for the child (e.g. the child
-   * runtime's own `DEEPSEEK_API_KEY`). Merged after
+   * runtime's own `KROKKI_API_KEY`). Merged after
    * the seam's `scrubbedParentEnv()` base, so an explicit credential or
    * current `DSH_*` fact survives while ambient namesakes never leak.
    */

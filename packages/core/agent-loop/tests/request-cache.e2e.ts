@@ -9,7 +9,7 @@ import AgentRegistry, { type Agent } from '@deepseek-ai/dsh-agent'
 
 import AgentLoop from '@deepseek-ai/dsh-agent-loop'
 import SessionProjectionRegistry from '@deepseek-ai/dsh-session-projection'
-import * as LlmDeepSeek from '@deepseek-ai/dsh-llm-deepseek'
+import * as LlmPiAi from '@deepseek-ai/dsh-llm-pi-ai'
 
 /**
  * With-key proof that log-derived requests translate into real provider cache hits: a
@@ -47,7 +47,17 @@ async function loopHarness(): Promise<Context> {
   await created.plugin(ToolRuntime)
   await created.plugin(AgentRegistry)
   await created.plugin(AgentLoop, { agents: [] })
-  await created.plugin(LlmDeepSeek)
+  await created.plugin(LlmPiAi, {
+    providers: {
+      'krokki-official': {
+        displayName: 'KROKKI',
+        apiKeyEnv: 'KROKKI_API_KEY',
+        api: 'openai-completions',
+        baseURL: 'https://api.krokki.com/v1',
+        models: [{ id: 'deepseek-v4-flash', name: 'deepseek-v4-flash', contextWindow: 262144 }],
+      },
+    },
+  })
   created.tools.register(defineContentToolFixture({
     name: 'lookup',
     description: 'Look up the stored value for a key.',
@@ -70,10 +80,10 @@ function waitForIdle(context: Context, agent: Agent): Promise<void> {
   })
 }
 
-describe.skipIf(!process.env.DEEPSEEK_API_KEY)('log-derived request cache hits (real API)', () => {
+describe.skipIf(!process.env.KROKKI_API_KEY)('log-derived request cache hits (real API)', () => {
   it('every request after the first hits the provider prefix cache', async () => {
     ctx = await loopHarness()
-    const agent = ctx.agentLoop.create(SessionId('cache-e2e'), { provider: 'deepseek-official', model: 'deepseek-v4-flash' })
+    const agent = ctx.agentLoop.create(SessionId('cache-e2e'), { provider: 'krokki-official', model: 'deepseek-v4-flash' })
 
     // Turn 1: forces a tool call → at least two steps (two model requests).
     agent.followup(createUserMessage({ content: [{ type: 'text', text: 'Look up the key "deploy-color" with the lookup tool and tell me the value.' }], source: { kind: 'user' } }))

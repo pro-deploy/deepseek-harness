@@ -737,7 +737,7 @@ describe('createFixtureApi', () => {
     const sessionId = sid('fx-alpha')
     const catalog = await api.sessionRemote.modelCatalog()
     if (!catalog.ok) throw new Error('models failed')
-    expect(catalog.value.groups.map(group => group.name)).toEqual(['DeepSeek', 'OpenAI'])
+    expect(catalog.value.groups.map(group => group.name)).toEqual(['KROKKI', 'OpenAI'])
     expect(catalog.value.groups[0]?.models.map(model => model.id))
       .toEqual(['deepseek-v4-flash', 'deepseek-v4-pro'])
 
@@ -769,7 +769,7 @@ describe('createFixtureApi', () => {
     if (!settings.ok) throw new Error('settings describe failed')
     expect((settings.value as { namespaces: unknown[] }).namespaces).toMatchObject([{
       ns: 'llm-deepseek',
-      value: { apiKeyEnv: 'DEEPSEEK_API_KEY' },
+      value: { apiKeyEnv: 'KROKKI_API_KEY' },
       secrets: [{ path: ['apiKey'], set: false }],
     }])
     for (const result of [
@@ -787,8 +787,8 @@ describe('createFixtureApi', () => {
       if (!result.ok) throw new Error('credential describe failed')
       return result.value as Record<string, unknown>
     }
-    expect(await describe(['DEEPSEEK_API_KEY', 'TEST_API_KEY'])).toEqual({
-      DEEPSEEK_API_KEY: { configured: true, source: 'file', writable: true },
+    expect(await describe(['KROKKI_API_KEY', 'TEST_API_KEY'])).toEqual({
+      KROKKI_API_KEY: { configured: true, source: 'file', writable: true },
       TEST_API_KEY: { configured: false, writable: true },
     })
     await api.credentialRemote.set('TEST_API_KEY', 'write-only-fixture-secret')

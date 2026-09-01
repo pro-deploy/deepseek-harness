@@ -32,7 +32,7 @@ kind: "package-library"
 import { launchEnvironmentOf } from '@deepseek-ai/dsh-launch-environment'
 
 declare const ctx: import('@deepseek-ai/cordis').Context
-const endpoint = launchEnvironmentOf(ctx).get('DEEPSEEK_BASE_URL')?.value
+const endpoint = launchEnvironmentOf(ctx).get('KROKKI_BASE_URL')?.value
 ```
 
 `get(name)` 按可信度从高到低搜索所有层。`getFrom(name, sources)` 只搜索指定的层，不改变这一可信顺序——绝不能接受某一层的调用方不把它列进去，因此后续任何重新排序都无法让它回来。
@@ -45,7 +45,7 @@ const endpoint = launchEnvironmentOf(ctx).get('DEEPSEEK_BASE_URL')?.value
 | `<invocation cwd>/.env` | harness 被启动于其中的项目；产品信任它配置自己的 agent（智能体） |
 | `$DSH_HOME/.env` | 用户自己的机器级默认值 |
 
-变量名按平台自身的规则匹配：POSIX 上精确匹配，Windows 上不区分大小写。在 Windows 上做大小写敏感的查找会选错层——shell 里的 `deepseek_api_key` 与项目 `.env` 里的 `DEEPSEEK_API_KEY` 对操作系统而言是同一个变量。
+变量名按平台自身的规则匹配：POSIX 上精确匹配，Windows 上不区分大小写。在 Windows 上做大小写敏感的查找会选错层——shell 里的 `deepseek_api_key` 与项目 `.env` 里的 `KROKKI_API_KEY` 对操作系统而言是同一个变量。
 
 ### 没有启动器引导这棵树时
 
@@ -87,7 +87,7 @@ const endpoint = launchEnvironmentOf(ctx).get('DEEPSEEK_BASE_URL')?.value
 
 - [boot 包](../../boot/app-boot/README.zh.md)——在任何配置项挂载之前填充 `ctx.launchEnvironment` 的启动器。
 - [凭据存储](../../credentials/credentials-local/README.zh.md)——针对快照各层解析已存储的凭据。
-- [DeepSeek 提供方](../../llm/llm-deepseek/README.zh.md)——通过启动环境读取提供方配置。
+- [pi-ai 提供方](../../llm/llm-pi-ai/README.zh.md)——通过启动环境读取提供方配置。
 
 -----
 

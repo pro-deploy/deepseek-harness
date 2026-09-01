@@ -31,11 +31,11 @@ const reasoning = {
 
 function state(overrides: Partial<ModelDirectoryState> = {}): ModelDirectoryState {
   return {
-    current: { provider: 'deepseek-official', model: 'deepseek-v4-flash' },
+    current: { provider: 'krokki-official', model: 'deepseek-v4-flash' },
     routable: true,
     groups: [{
-      id: 'deepseek-official',
-      name: 'DeepSeek',
+      id: 'krokki-official',
+      name: 'KROKKI',
       models: [{
         id: 'deepseek-v4-flash',
         name: 'DeepSeek-V4-Flash',
@@ -80,7 +80,7 @@ describe('ModelSelect reasoning effort', () => {
     fireEvent.click(screen.getByRole('menuitemradio', { name: /Max/ }))
     await waitFor(() => {
       expect(select).toHaveBeenCalledWith({
-        provider: 'deepseek-official',
+        provider: 'krokki-official',
         model: 'deepseek-v4-flash',
         reasoningEffort: 'max',
       })
@@ -120,7 +120,7 @@ describe('ModelSelect reasoning effort', () => {
 
   it('shows the durable model id when the catalog has no matching display name', () => {
     const directory = createSnapshotStore(state({
-      current: { provider: 'deepseek-official', model: 'removed-model' },
+      current: { provider: 'krokki-official', model: 'removed-model' },
     }))
     const select = vi.fn().mockResolvedValue(true)
     render(<ModelSelect
@@ -132,8 +132,8 @@ describe('ModelSelect reasoning effort', () => {
       t={t}
     />)
 
-    const trigger = screen.getByRole('button', { name: '选择模型，当前 deepseek-official/removed-model' })
-    expect(trigger.textContent).toContain('deepseek-official/removed-model')
+    const trigger = screen.getByRole('button', { name: '选择模型，当前 krokki-official/removed-model' })
+    expect(trigger.textContent).toContain('krokki-official/removed-model')
     fireEvent.click(trigger)
     expect(screen.queryByRole('menuitem', { name: /推理等级/ })).toBeNull()
     fireEvent.click(screen.getByRole('menuitem', { name: /模型/ }))
@@ -170,8 +170,8 @@ describe('ModelSelect reasoning effort', () => {
 
   it('announces a rejected selection as a transient toast and keeps the in-menu strip for loads', async () => {
     const groups = [{
-      id: 'deepseek-official',
-      name: 'DeepSeek',
+      id: 'krokki-official',
+      name: 'KROKKI',
       models: [
         { id: 'deepseek-v4-flash', name: 'DeepSeek-V4-Flash', reasoning },
         { id: 'deepseek-v4-pro', name: 'DeepSeek-V4-Pro' },

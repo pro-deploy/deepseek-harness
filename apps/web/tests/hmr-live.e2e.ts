@@ -78,8 +78,8 @@ it('hot-reloads a real client-plugin source edit without refreshing the page', a
     .map(path => join(REPO_ROOT, path))
   const originalClientBundles = await Promise.all(clientBundlePaths.map(async path => [path, await readFile(path)] as const))
   const originalSource = await readFile(sourcePath)
-  const oldText = 'Мне по зубам любая задача, с чего начнём?'
-  const sourceNeedle = "'hero.headline': 'Мне по зубам любая задача, с чего начнём?'"
+  const oldText = 'I can sink my teeth into anything. Where do we start?'
+  const sourceNeedle = "'hero.headline': 'I can sink my teeth into anything. Where do we start?'"
   const newText = `HMR UPDATED ${'x'.repeat(80)}`
   const updatedSource = originalSource.toString().replace(sourceNeedle, `'hero.headline': '${newText}'`)
   if (updatedSource === originalSource.toString()) throw new Error(`HMR source lacks ${JSON.stringify(sourceNeedle)}`)
@@ -102,7 +102,7 @@ it('hot-reloads a real client-plugin source edit without refreshing the page', a
       [process.execPath, binPath, 'web', '--no-open', '--port', '0'],
       world,
       {
-        DEEPSEEK_API_KEY: 'keyless-hmr-no-call',
+        KROKKI_API_KEY: 'keyless-hmr-no-call',
         DSH_HOME: join(world, '.dsh'),
       },
     ))

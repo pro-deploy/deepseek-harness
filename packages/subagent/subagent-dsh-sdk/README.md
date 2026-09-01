@@ -43,7 +43,7 @@ The provider advertises `agentOptions: true`, with `outputSchema`/`depthLimit`/`
 | `patches` | `[]` | Ordered per-launch profile patch files, resolved and checked at plugin load |
 | `dshHome` | required | Absolute isolated Harness home for every nested child process |
 | `cwd` | parent session cwd | Working-directory override for the child process and its SDK session |
-| `provider` | `deepseek-official` | Provider route sent in the child's `initialize` |
+| `provider` | `krokki-official` | Provider route sent in the child's `initialize` |
 | `model` | `deepseek-v4-flash` | Model sent in the child's `initialize` |
 | `maxTokens` | adapter/provider route default | Per-request output-token cap sent in the child's `initialize` |
 | `env` | `{}` | Explicit child environment layered over the credential-scrubbed parent environment |
@@ -65,7 +65,7 @@ Request `agentOptions` override `provider`, `model`, and `maxTokens` independent
     dshHome: !!js dshHomePath('children')
     maxTokens: 49152
     env:
-      DEEPSEEK_API_KEY: !!js process.env.DEEPSEEK_API_KEY
+      KROKKI_API_KEY: !!js process.env.KROKKI_API_KEY
 - id: tool-subagent
   name: '@deepseek-ai/dsh-tool-subagent'
   config: { provider: dsh-sdk, toolName: subagent, maxDepth: 'provider-managed' }

@@ -144,7 +144,7 @@ describe('Session open', () => {
     gate.resolve(ok({
       records: entries(page) as never[],
       hasMore: false,
-      modelSelection: { provider: 'deepseek-official', model: 'deepseek-v4-flash' },
+      modelSelection: { provider: 'krokki-official', model: 'deepseek-v4-flash' },
     }))
     await Promise.all([opening, ...deliveries])
     const seqs = eventSeqs(session)
@@ -404,7 +404,7 @@ describe('paging', () => {
     gate.resolve(ok({
       records: entries(plainTurn(0, 0, 'a', 'b')) as never[],
       hasMore: false,
-      modelSelection: { provider: 'deepseek-official', model: 'deepseek-v4-flash' },
+      modelSelection: { provider: 'krokki-official', model: 'deepseek-v4-flash' },
     }))
     await Promise.all([first, second])
     expect(api.callsOf('session.follow')).toHaveLength(1)
@@ -792,7 +792,7 @@ describe('remaining branches', () => {
     stale.resolve(ok({
       records: entries(plainTurn(0, 0, '旧', '代')) as never[],
       hasMore: false,
-      modelSelection: { provider: 'deepseek-official', model: 'stale' },
+      modelSelection: { provider: 'krokki-official', model: 'stale' },
     })) // success, but its generation is gone
     await Promise.all([opening, resynced])
     expect(eventSeqs(session)).toEqual(plainTurn(6, 1, '新', '代').map(event => event.seq))
@@ -811,7 +811,7 @@ describe('remaining branches', () => {
     repairPull.resolve(ok({
       records: entries(plainTurn(0, 0, '旧', '页')) as never[],
       hasMore: false,
-      modelSelection: { provider: 'deepseek-official', model: 'stale' },
+      modelSelection: { provider: 'krokki-official', model: 'stale' },
     })) // repair result: stale, dropped
     await Promise.all([delivery, resynced])
     expect(eventSeqs(session)).toEqual(plainTurn(6, 1, 'c', 'd').map(event => event.seq))
@@ -842,7 +842,7 @@ describe('remaining branches', () => {
         { type: 'event', event: historyResult },
       ] as never[],
       hasMore: false,
-      modelSelection: { provider: 'deepseek-official', model: 'deepseek-v4-flash' },
+      modelSelection: { provider: 'krokki-official', model: 'deepseek-v4-flash' },
     }))
     await session.open()
     expect(windowEntries(session).slice(-2)).toEqual([
@@ -890,7 +890,7 @@ describe('resync', () => {
     replacement.resolve(ok({
       records: entries(plainTurn(10, 2, '终', '页')) as never[],
       hasMore: false,
-      modelSelection: { provider: 'deepseek-official', model: 'deepseek-v4-flash' },
+      modelSelection: { provider: 'krokki-official', model: 'deepseek-v4-flash' },
     }))
     await Promise.all([syncing, liveDeliveries])
     await vi.waitFor(() => {

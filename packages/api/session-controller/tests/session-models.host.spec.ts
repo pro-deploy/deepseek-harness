@@ -98,9 +98,9 @@ async function harness(logged?: {
   await ctx.plugin(SystemPrompt, { persona: '' })
   await ctx.plugin(LlmRuntime)
   await ctx.plugin(AgentRegistry)
-  ctx.llm.registerAdapter(['deepseek-official'], new CatalogAdapter('DeepSeek', [
-    { provider: 'deepseek-official', id: 'deepseek-chat', name: 'DeepSeek Chat' },
-    { provider: 'deepseek-official', id: 'deepseek-reasoner', name: 'DeepSeek Reasoner', description: 'Reasoning model' },
+  ctx.llm.registerAdapter(['krokki-official'], new CatalogAdapter('KROKKI', [
+    { provider: 'krokki-official', id: 'deepseek-chat', name: 'DeepSeek Chat' },
+    { provider: 'krokki-official', id: 'deepseek-reasoner', name: 'DeepSeek Reasoner', description: 'Reasoning model' },
   ], REASONING))
   ctx.llm.registerAdapter(['broken'], new CatalogAdapter('Broken Provider', new Error('catalog offline')))
   ctx.llm.registerAdapter(['metadata-broken'], new CatalogAdapter('Metadata Broken', [
@@ -185,7 +185,7 @@ describe('Web session model selection', () => {
     const followup = vi.fn()
     Object.assign(agent, { followup })
     const remote = createSessionTestRemote(ctx, {
-      defaultModelSelection: () => ({ provider: 'deepseek-official', model: 'deepseek-chat' }),
+      defaultModelSelection: () => ({ provider: 'krokki-official', model: 'deepseek-chat' }),
       cwd: '/tmp',
     })
 
@@ -253,7 +253,7 @@ describe('Web session model selection', () => {
     const followup = vi.fn()
     Object.assign(agent, { steer, followup })
     const remote = createSessionTestRemote(ctx, {
-      defaultModelSelection: () => ({ provider: 'deepseek-official', model: 'deepseek-chat' }),
+      defaultModelSelection: () => ({ provider: 'krokki-official', model: 'deepseek-chat' }),
       cwd: '/tmp',
     })
 
@@ -283,7 +283,7 @@ describe('Web session model selection', () => {
     const { ctx, agent, sessionId } = await harness()
     registerTextOnly(ctx)
     const remote = createSessionTestRemote(ctx, {
-      defaultModelSelection: () => ({ provider: 'deepseek-official', model: 'deepseek-chat' }),
+      defaultModelSelection: () => ({ provider: 'krokki-official', model: 'deepseek-chat' }),
       cwd: '/tmp',
     })
     const image = {
@@ -321,7 +321,7 @@ describe('Web session model selection', () => {
     const readImage = vi.fn(() => Promise.resolve({ ref, data: Uint8Array.of(1, 2) }))
     ctx.provide('attachments', { readImage } as never)
     const remote = createSessionTestRemote(ctx, {
-      defaultModelSelection: () => ({ provider: 'deepseek-official', model: 'deepseek-chat' }),
+      defaultModelSelection: () => ({ provider: 'krokki-official', model: 'deepseek-chat' }),
       cwd: '/tmp',
     })
     agent.session.append('agent/inbox/spliced', {
@@ -349,21 +349,21 @@ describe('Web session model selection', () => {
   })
   it('groups successful providers and leaves an unlisted current selection out of the catalog', async () => {
     const { ctx, sessionId } = await harness({
-      provider: 'deepseek-official',
+      provider: 'krokki-official',
       model: 'private-preview',
       reasoningEffort: ReasoningEffortId('max'),
     })
-    const remote = createSessionTestRemote(ctx, { defaultModelSelection: () => ({ provider: 'deepseek-official', model: 'deepseek-chat' }), cwd: '/tmp' })
+    const remote = createSessionTestRemote(ctx, { defaultModelSelection: () => ({ provider: 'krokki-official', model: 'deepseek-chat' }), cwd: '/tmp' })
 
     const catalog = expectValue(await remote.modelCatalog())
     expect(currentSelection(ctx, sessionId)).toEqual({
-      provider: 'deepseek-official',
+      provider: 'krokki-official',
       model: 'private-preview',
       reasoningEffort: 'max',
     })
     expect(catalog.groups).toEqual([{
-      id: 'deepseek-official',
-      name: 'DeepSeek',
+      id: 'krokki-official',
+      name: 'KROKKI',
       models: [
         { id: 'deepseek-chat', name: 'DeepSeek Chat', reasoning: REASONING },
         {
@@ -403,7 +403,7 @@ describe('Web session model selection', () => {
       }
     }('String Failure', []))
     createSessionTestRemote(ctx, {
-      defaultModelSelection: () => ({ provider: 'deepseek-official', model: 'deepseek-chat' }),
+      defaultModelSelection: () => ({ provider: 'krokki-official', model: 'deepseek-chat' }),
       cwd: '/tmp',
     })
 
@@ -430,21 +430,21 @@ describe('Web session model selection', () => {
 
   it('accepts an advisory-unlisted model, rejects an unavailable provider, and switches only after the next assembly', async () => {
     const { ctx, agent, sessionId } = await harness()
-    const remote = createSessionTestRemote(ctx, { defaultModelSelection: () => ({ provider: 'deepseek-official', model: 'deepseek-chat' }), cwd: '/tmp' })
+    const remote = createSessionTestRemote(ctx, { defaultModelSelection: () => ({ provider: 'krokki-official', model: 'deepseek-chat' }), cwd: '/tmp' })
     const seed: LlmCallConfig = { provider: 'seed', model: 'seed', temperature: 0.2 }
     const signal = new AbortController().signal
 
     expect(currentSelection(ctx, sessionId))
-      .toEqual({ provider: 'deepseek-official', model: 'deepseek-chat' })
+      .toEqual({ provider: 'krokki-official', model: 'deepseek-chat' })
 
     const selected = expectValue(await remote.selectModel(request({
       sessionId,
-      provider: 'deepseek-official',
+      provider: 'krokki-official',
       model: 'private-preview',
       reasoningEffort: 'max',
     })))
     expect(selected.selected).toEqual({
-      provider: 'deepseek-official',
+      provider: 'krokki-official',
       model: 'private-preview',
       reasoningEffort: 'max',
     })
@@ -453,18 +453,18 @@ describe('Web session model selection', () => {
     )).resolves.toEqual(seed)
 
     expect((await ctx.systemPrompt.assemble()).variables)
-      .toMatchObject({ provider: 'deepseek-official', model: 'private-preview' })
+      .toMatchObject({ provider: 'krokki-official', model: 'private-preview' })
     await expect(agentEvents(ctx, agent).waterfall(
       'agent/request', { turn: 1, step: 1, signal }, () => Promise.resolve(seed),
     )).resolves.toMatchObject({
-      provider: 'deepseek-official',
+      provider: 'krokki-official',
       model: 'private-preview',
       reasoningEffort: 'max',
     })
 
     const unsupported = await remote.selectModel(request({
       sessionId,
-      provider: 'deepseek-official',
+      provider: 'krokki-official',
       model: 'private-preview',
       reasoningEffort: 'medium',
     }))
@@ -472,7 +472,7 @@ describe('Web session model selection', () => {
       ok: false,
       error: {
         code: 'session/model-unavailable',
-        message: 'provider "deepseek-official" model "private-preview" does not support reasoning effort "medium"',
+        message: 'provider "krokki-official" model "private-preview" does not support reasoning effort "medium"',
       },
     })
 
@@ -502,35 +502,35 @@ describe('Web session model selection', () => {
       },
     })
     expect(currentSelection(ctx, sessionId))
-      .toEqual({ provider: 'deepseek-official', model: 'private-preview', reasoningEffort: 'max' })
+      .toEqual({ provider: 'krokki-official', model: 'private-preview', reasoningEffort: 'max' })
     await ctx.fiber.dispose()
   })
 
   it('reads the Agent default live for a session whose log names no selection', async () => {
     const { ctx, sessionId } = await harness()
-    let stored = { provider: 'deepseek-official', model: 'deepseek-chat' }
+    let stored = { provider: 'krokki-official', model: 'deepseek-chat' }
     createSessionTestRemote(ctx, {
       defaultModelSelection: () => stored,
       cwd: '/tmp',
     })
 
     expect(currentSelection(ctx, sessionId))
-      .toEqual({ provider: 'deepseek-official', model: 'deepseek-chat' })
+      .toEqual({ provider: 'krokki-official', model: 'deepseek-chat' })
     // The default moving after the session exists still reaches it: New
     // Session reuses a blank session rather than minting another, so a seed
     // captured at creation would show the superseded model there.
-    stored = { provider: 'deepseek-official', model: 'deepseek-reasoner' }
+    stored = { provider: 'krokki-official', model: 'deepseek-reasoner' }
     expect(currentSelection(ctx, sessionId))
-      .toEqual({ provider: 'deepseek-official', model: 'deepseek-reasoner' })
+      .toEqual({ provider: 'krokki-official', model: 'deepseek-reasoner' })
     await ctx.fiber.dispose()
   })
 
   it('keeps a session on its logged selection when the Agent default differs', async () => {
     const { ctx, sessionId } = await harness({
-      provider: 'deepseek-official',
+      provider: 'krokki-official',
       model: 'deepseek-chat',
     })
-    let stored = { provider: 'deepseek-official', model: 'deepseek-chat' }
+    let stored = { provider: 'krokki-official', model: 'deepseek-chat' }
     createSessionTestRemote(ctx, {
       defaultModelSelection: () => stored,
       cwd: '/tmp',
@@ -538,13 +538,13 @@ describe('Web session model selection', () => {
 
     stored = { provider: 'duplicate', model: 'same' }
     expect(currentSelection(ctx, sessionId))
-      .toEqual({ provider: 'deepseek-official', model: 'deepseek-chat' })
+      .toEqual({ provider: 'krokki-official', model: 'deepseek-chat' })
     await ctx.fiber.dispose()
   })
 
   it('does not reinterpret an adapter-owned reasoning default as an explicit Web selection', async () => {
     const { ctx, agent } = await harness({
-      provider: 'deepseek-official',
+      provider: 'krokki-official',
       model: 'deepseek-chat',
       reasoningEffort: ReasoningEffortId('high'),
       adapterDefaults: { reasoningEffort: true },
@@ -555,7 +555,7 @@ describe('Web session model selection', () => {
     })
 
     expect(new ApiSessionAgentController(ctx).selectionFor(agent).current)
-      .toEqual({ provider: 'deepseek-official', model: 'deepseek-chat' })
+      .toEqual({ provider: 'krokki-official', model: 'deepseek-chat' })
     await ctx.fiber.dispose()
   })
 
@@ -564,7 +564,7 @@ describe('Web session model selection', () => {
     const saved: unknown[] = []
     let reject = false
     const remote = createSessionTestRemote(ctx, {
-      defaultModelSelection: () => ({ provider: 'deepseek-official', model: 'deepseek-chat' }),
+      defaultModelSelection: () => ({ provider: 'krokki-official', model: 'deepseek-chat' }),
       saveDefaultModelSelection: (selection) => {
         saved.push(selection)
         return reject ? Promise.reject(new Error('read-only document')) : Promise.resolve()
@@ -573,10 +573,10 @@ describe('Web session model selection', () => {
     })
 
     expectValue(await remote.selectModel(request({
-      sessionId, provider: 'deepseek-official', model: 'deepseek-reasoner', reasoningEffort: 'max',
+      sessionId, provider: 'krokki-official', model: 'deepseek-reasoner', reasoningEffort: 'max',
     })))
     expect(saved).toEqual([
-      { provider: 'deepseek-official', model: 'deepseek-reasoner', reasoningEffort: 'max' },
+      { provider: 'krokki-official', model: 'deepseek-reasoner', reasoningEffort: 'max' },
     ])
 
     // A refused selection never becomes anyone's default.
@@ -587,11 +587,11 @@ describe('Web session model selection', () => {
     // to this session, so the call still succeeds.
     reject = true
     const stillAccepted = expectValue(await remote.selectModel(request({
-      sessionId, provider: 'deepseek-official', model: 'deepseek-chat',
+      sessionId, provider: 'krokki-official', model: 'deepseek-chat',
     })))
-    expect(stillAccepted.selected).toEqual({ provider: 'deepseek-official', model: 'deepseek-chat', reasoningEffort: 'high' })
+    expect(stillAccepted.selected).toEqual({ provider: 'krokki-official', model: 'deepseek-chat', reasoningEffort: 'high' })
     expect(currentSelection(ctx, sessionId))
-      .toEqual({ provider: 'deepseek-official', model: 'deepseek-chat', reasoningEffort: 'high' })
+      .toEqual({ provider: 'krokki-official', model: 'deepseek-chat', reasoningEffort: 'high' })
     await ctx.fiber.dispose()
   })
 
@@ -617,7 +617,7 @@ describe('Web session model selection', () => {
     // An advisory-unlisted model on a live route is NOT this: the route
     // serves it, so the prompt goes through and nothing blocks.
     expectValue(await remote.selectModel(request({
-      sessionId, provider: 'deepseek-official', model: 'unlisted-but-served',
+      sessionId, provider: 'krokki-official', model: 'unlisted-but-served',
     })))
     const catalog = await buildModelCatalog(ctx)
     expect(catalog.routableProviders.includes(currentSelection(ctx, sessionId).provider)).toBe(true)
@@ -677,7 +677,7 @@ describe('Web session model selection', () => {
     const followup = vi.fn()
     Object.assign(agent, { followup })
     const remote = createSessionTestRemote(ctx, {
-      defaultModelSelection: () => ({ provider: 'deepseek-official', model: 'deepseek-chat' }),
+      defaultModelSelection: () => ({ provider: 'krokki-official', model: 'deepseek-chat' }),
       cwd: '/tmp',
     })
     const image = { type: 'image' as const, mediaType: 'image/png' as const, data: 'AQ==' }
@@ -719,7 +719,7 @@ describe('Web session model selection', () => {
       content: [{ type: 'image', attachment: savedRef }],
     } as never)
     expectValue(await remote.selectModel(request({
-      sessionId, provider: 'deepseek-official', model: 'deepseek-chat',
+      sessionId, provider: 'krokki-official', model: 'deepseek-chat',
     })))
     expectValue(await remote.selectModel(request({
       sessionId, provider: 'image-capable', model: 'vision',

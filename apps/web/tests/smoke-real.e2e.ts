@@ -1,6 +1,6 @@
 // Real-host smoke: spawn `dsh web` with a real key, walk the full flow
 // list in a real chromium, screenshot every screen into .artifacts/ for the
-// figma comparison pass. Self-skips without DEEPSEEK_API_KEY (repo e2e
+// figma comparison pass. Self-skips without KROKKI_API_KEY (repo e2e
 // convention); vitest.web.config.ts loads the repo-root .env before this file
 // runs (the CLI only auto-loads .env from its cwd — a temp dir here, so
 // sessions never land in the repo's .sessions).
@@ -306,7 +306,7 @@ describe('dsh web keyless CLI smoke', () => {
         cwd: sessionsDir,
         env: {
           ...process.env,
-          DEEPSEEK_API_KEY: 'keyless-web-no-call',
+          KROKKI_API_KEY: 'keyless-web-no-call',
           DSH_HOME: join(sessionsDir, '.dsh'),
           DSH_AGENTS_HOME: join(sessionsDir, '.agents'),
           TSX_TSCONFIG_PATH: join(REPO_ROOT, 'tsconfig.json'),
@@ -429,8 +429,8 @@ describe('dsh web keyless CLI smoke', () => {
         cwd: workspace,
         env: {
           ...process.env,
-          DEEPSEEK_API_KEY: 'keyless-web-workspace',
-          DEEPSEEK_BASE_URL: `http://127.0.0.1:${address.port}`,
+          KROKKI_API_KEY: 'keyless-web-workspace',
+          KROKKI_BASE_URL: `http://127.0.0.1:${address.port}`,
           DSH_HOME: join(workspace, '.dsh'),
           DSH_AGENTS_HOME: join(workspace, '.agents'),
           TSX_TSCONFIG_PATH: join(REPO_ROOT, 'tsconfig.json'),
@@ -544,8 +544,8 @@ describe('dsh web keyless CLI smoke', () => {
         cwd: workspace,
         env: {
           ...process.env,
-          DEEPSEEK_API_KEY: 'keyless-web-retry',
-          DEEPSEEK_BASE_URL: `http://127.0.0.1:${address.port}`,
+          KROKKI_API_KEY: 'keyless-web-retry',
+          KROKKI_BASE_URL: `http://127.0.0.1:${address.port}`,
           DSH_HOME: join(workspace, '.dsh'),
           TSX_TSCONFIG_PATH: join(REPO_ROOT, 'tsconfig.json'),
         },
@@ -629,8 +629,8 @@ describe('dsh web keyless CLI smoke', () => {
         cwd: workspace,
         env: {
           ...process.env,
-          DEEPSEEK_API_KEY: 'keyless-web-ptc',
-          DEEPSEEK_BASE_URL: `http://127.0.0.1:${address.port}`,
+          KROKKI_API_KEY: 'keyless-web-ptc',
+          KROKKI_BASE_URL: `http://127.0.0.1:${address.port}`,
           DSH_TOOLS_MODE: 'ptc',
           DSH_HOME: join(workspace, '.dsh'),
           DSH_AGENTS_HOME: join(workspace, '.agents'),
@@ -670,7 +670,7 @@ describe('dsh web keyless CLI smoke', () => {
   })
 })
 
-describe.skipIf(!process.env.DEEPSEEK_API_KEY || notReady.length > 0)('web smoke (real host, real key)', () => {
+describe.skipIf(!process.env.KROKKI_API_KEY || notReady.length > 0)('web smoke (real host, real key)', () => {
   let child: ChildProcess
   let sessionsDir: string
   let baseUrl: string

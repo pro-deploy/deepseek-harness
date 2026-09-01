@@ -11,7 +11,6 @@ import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { delimiter as pathDelimiter } from 'node:path'
 import type { Context } from '@deepseek-ai/cordis'
 import type {} from '@deepseek-ai/dsh-compaction'
-import type {} from '@deepseek-ai/dsh-deepseek-llm-api-extensions'
 import { decodeSeqRanges, decodeStorageRecord, type SessionEvent } from '@deepseek-ai/dsh-session'
 import type {
   ContentBlock,
@@ -793,20 +792,6 @@ async function* replayEntry(entry: ReplayEntry, signal: AbortSignal | undefined,
   }
 }
 
-/** Whether the scripted provider call reached the live adapter's post-2xx commit point. */
-function providerAccepted(entry: ReplayEntry): boolean {
-  switch (entry.kind) {
-    case 'chunks':
-    case 'hang':
-      return true
-    case 'throw':
-      return entry.accepted ?? entry.chunks.length > 0
-    /* v8 ignore next -- override parsing and derived entries close the local union before replay. */
-    default:
-      return assertNever(entry, 'llm-replay acceptance entry')
-  }
-}
-
 /**
  * Install per-session positional replay. A newly seen live session takes the
  * next ordered recorded script, then advances its own cursor synchronously at
@@ -871,20 +856,6 @@ export function installLlmReplay(ctx: Context, config: ReplayConfig): ReplayHand
       }
       inferStartedSubagents(options.messages, liveSessionIds)
       const resolved = resolveScriptedEntry(materializeSessionTokens(entry, liveSessionIds), options.messages)
-      if (options.provider === 'deepseek-official' && providerAccepted(resolved)) {
-        const extensions = ctx.get('deepseekLlmApiExtensions')
-        if (extensions !== undefined) {
-          const signal = options.signal ?? new AbortController().signal
-          const prepared = await extensions.prepare({
-            // Replay reproduces post-2xx side effects, not the provider wire body.
-            body: { messages: [] },
-            signal,
-            ...options.sessionId === undefined ? {} : { sessionId: String(options.sessionId) },
-            ...options.purpose === undefined ? {} : { purpose: options.purpose },
-          })
-          await prepared.accept()
-        }
-      }
       yield* replayEntry(resolved, options.signal, paceMs)
     })()
   }

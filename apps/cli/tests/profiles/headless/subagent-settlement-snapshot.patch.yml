@@ -5,14 +5,14 @@
 - id: headless-runner
   disabled: true
 
-- id: llm-deepseek
+- id: llm-pi-ai
   disabled: true
 
 - id: agent-loop
   config:
     agents:
       - id: main
-        provider: deepseek-official
+        provider: krokki-official
         model: deepseek-v4-flash
         cwd: !!js process.cwd()
 

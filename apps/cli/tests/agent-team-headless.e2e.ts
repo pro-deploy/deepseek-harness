@@ -60,7 +60,7 @@ describe('dsh run with Agent Teams enabled', () => {
           DSH_HOME: home,
           DSH_AGENTS_HOME: join(cwd, '.agents'),
           DSH_TELEMETRY_DISABLED: '1',
-          DEEPSEEK_API_KEY: '',
+          KROKKI_API_KEY: '',
           NODE_OPTIONS: [
             process.env.NODE_OPTIONS,
             '--disable-warning=ExperimentalWarning',
