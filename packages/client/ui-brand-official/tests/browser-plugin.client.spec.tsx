@@ -75,15 +75,15 @@ describe('official browser-brand plugin', () => {
 
   it('renders the official name independently from both requested mark sizes', () => {
     const name = render(<OfficialBrandName />)
-    // The name wordmark is live text (KROKKI + HARNESS badge) with no leading mark svg.
-    expect(name.container.querySelector('svg')).toBeNull()
+    // The name wordmark is live text (KROKKI + HARNESS badge) with no leading mark image.
+    expect(name.container.querySelector('img')).toBeNull()
     expect(name.container.textContent).toContain('KROKKI')
     expect(name.container.textContent).toContain('HARNESS')
     name.unmount()
 
     const mark = render(<OfficialBrandMark size={34} />)
-    expect(mark.container.querySelector('svg')?.getAttribute('width')).toBe('34')
+    expect(mark.container.querySelector('img')?.getAttribute('width')).toBe('34')
     mark.rerender(<OfficialBrandMark size={24} />)
-    expect(mark.container.querySelector('svg')?.getAttribute('width')).toBe('24')
+    expect(mark.container.querySelector('img')?.getAttribute('width')).toBe('24')
   })
 })

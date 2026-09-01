@@ -25,12 +25,13 @@ exports[`sidebar shell snapshots > renders the collapsed rail after the crossfad
             data-slot="sidebar.brand.mark"
             style="display: contents;"
           >
-            <svg
+            <img
+              alt=""
               aria-hidden="true"
-              data-content="f9cdf0bc"
-              fill="none"
+              draggable="false"
               height="24"
-              viewBox="0 0 64 64"
+              src="/krokki-logo.png"
+              style="display: block; object-fit: contain;"
               width="24"
             />
           </div>
@@ -120,13 +121,14 @@ exports[`sidebar shell snapshots > renders the expanded column (wordmark, capsul
               data-slot="sidebar.brand.mark"
               style="display: contents;"
             >
-              <svg
+              <img
+                alt=""
                 aria-hidden="true"
-                data-content="f9cdf0bc"
-                fill="none"
-                height="24"
-                viewBox="0 0 64 64"
-                width="24"
+                draggable="false"
+                height="32"
+                src="/krokki-logo.png"
+                style="display: block; object-fit: contain;"
+                width="32"
               />
             </div>
           </span>
@@ -138,18 +140,9 @@ exports[`sidebar shell snapshots > renders the expanded column (wordmark, capsul
               style="display: contents;"
             >
               <span
-                class="localBuildBrand"
+                class="fallbackBrandName"
               >
-                <span
-                  class="localBuildTitle"
-                >
-                  KROKKI Local Build
-                </span>
-                <span
-                  class="buildVersion"
-                >
-                  1.2.3-rc.4-abc1234-dirty
-                </span>
+                KROKKI
               </span>
             </div>
           </span>
@@ -250,13 +243,14 @@ exports[`sidebar shell snapshots > renders the expanded column in the default lo
               data-slot="sidebar.brand.mark"
               style="display: contents;"
             >
-              <svg
+              <img
+                alt=""
                 aria-hidden="true"
-                data-content="f9cdf0bc"
-                fill="none"
-                height="24"
-                viewBox="0 0 64 64"
-                width="24"
+                draggable="false"
+                height="32"
+                src="/krokki-logo.png"
+                style="display: block; object-fit: contain;"
+                width="32"
               />
             </div>
           </span>
@@ -268,18 +262,9 @@ exports[`sidebar shell snapshots > renders the expanded column in the default lo
               style="display: contents;"
             >
               <span
-                class="localBuildBrand"
+                class="fallbackBrandName"
               >
-                <span
-                  class="localBuildTitle"
-                >
-                  KROKKI 本地构建
-                </span>
-                <span
-                  class="buildVersion"
-                >
-                  1.2.3-rc.4-abc1234-dirty
-                </span>
+                KROKKI
               </span>
             </div>
           </span>

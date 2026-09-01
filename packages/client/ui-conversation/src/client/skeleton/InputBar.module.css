@@ -45,7 +45,9 @@
      l2-darkmode-thin pair. Fill: the input surface token (elevated in dark). */
   border: 1px solid var(--dsw-alias-border-l2-darkmode-thin);
   border-radius: 22px;
-  background: var(--dsw-specific-input-major);
+  /* Elevated module surface so the composer panel reads as a distinct panel
+     lifted off the near-black conversation base. */
+  background: var(--dsw-alias-bg-module-platform);
   box-shadow: var(--dsw-shadow-lv2);
   /* The draft text follows the Settings font-size preference (the textarea,
      mirror, and backdrop all inherit from here, so the three layers stay in
@@ -312,9 +314,9 @@
   cursor: default;
 }
 
-/* Primary send (figma IconButton 34:10465): 34px circle, #3964FE light /
-   #679EFE dark — the info-fill pair (500→400), NOT button-primary (ink);
-   white glyph; empty text = 0.4 opacity. */
+/* Primary send (figma IconButton 34:10465): 34px circle on the brand
+   info-fill pair (deepseek 500 light, 400 dark — the neon lime), NOT
+   button-primary (ink); near-black glyph; empty text = 0.4 opacity. */
 .primary {
   display: grid;
   place-items: center;
@@ -324,9 +326,9 @@
   border: none;
   border-radius: 999px;
   background: var(--dsw-alias-button-info-fill);
-  /* Static white, not the foreground token: the arrow stays white on the blue
-     fill in both themes (design 34:10465). */
-  color: #fff;
+  /* Near-black glyph: the arrow reads against the neon lime brand fill in
+     both themes, where a white glyph would wash out on the light accent. */
+  color: var(--dsw-static-neutral-bluish-1000);
   cursor: pointer;
   transition: background-color 100ms ease;
   /* Opts out of the row's 2px downward shift (.row top pad): the send circle

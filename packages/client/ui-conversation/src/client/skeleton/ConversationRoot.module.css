@@ -41,6 +41,8 @@
   border-bottom: 1px solid transparent;
 }
 
+/* Divider line hidden per product request (kept transparent, not removed, so
+   restoring it is a one-line change back to the border token). */
 .header::after {
   content: '';
   position: absolute;
@@ -49,7 +51,7 @@
   left: 0;
   z-index: 0;
   height: 1px;
-  background: var(--dsw-alias-border-l2);
+  background: transparent;
   pointer-events: none;
 }
 
@@ -147,10 +149,13 @@
 }
 
 /* figma Tab_Group 34:11441: 35px strip, gap 36, pad-left 8, tabs bottom-aligned. */
+/* Temporarily hidden per product request: the Chat/Trajectory view-tab strip
+   is not shown. The tabs and views stay registered; flip back to `flex` to
+   restore the strip. */
 .tabs {
   position: relative;
   z-index: 1;
-  display: flex;
+  display: none;
   gap: 36px;
   margin-top: 4px;
   padding-left: 8px;
@@ -436,6 +441,14 @@
   /* figma drew px 8; nudged +12 so the chip's folder glyph lines up closer to
      the card's inner controls below. */
   padding-left: 20px;
+}
+
+/* Hero backdrop: a soft lime glow (the brand ring color) pooled behind the
+   headline and input card, echoing the old fork's blurred backdrop ellipse. */
+.root[data-phase='hero'] {
+  background:
+    radial-gradient(72% 50% at 50% 58%, rgba(163, 230, 53, 0.13), rgba(163, 230, 53, 0) 70%),
+    var(--dsw-alias-bg-base);
 }
 
 /* Hero: the composer sits inside the session scroll body; center there so

@@ -52,8 +52,9 @@
   padding: 1px 7px 0;
   border: 1px solid var(--dsw-alias-interactive-bg-hover);
   border-radius: 24px;
-  background: var(--dsw-alias-state-business-tertiary);
-  color: var(--dsw-alias-label-primary-bluish);
+  /* Brand accent: the neon lime of the logo ring with near-black ink. */
+  background: var(--dsw-static-deepseek-400);
+  color: var(--dsw-static-neutral-bluish-1000);
   font-family: var(--ds-font-family-code);
   font-size: 12px;
   line-height: 18px;

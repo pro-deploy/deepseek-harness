@@ -30,7 +30,7 @@ export const en = {
   'collapse': 'Collapse',
   'expand': 'Expand',
   'back': 'Back',
-  'brand.localBuild': 'KROKKI Local Build',
+  'brand.localBuild': 'KROKKI',
   'unknown': 'Unknown',
   'none': 'None',
   'truncated': 'Truncated',

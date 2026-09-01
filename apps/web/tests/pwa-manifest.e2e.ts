@@ -46,12 +46,10 @@ it('ships install metadata with the built web application', async () => {
   })
 })
 
-it('ships the branded gradient mark as the favicon', async () => {
+it('ships the KROKKI mascot as the favicon', async () => {
   const favicon = await readFile(join(DIST_ROOT, 'favicon.svg'), 'utf8')
-  // The mark is a triangle-and-dot glyph painted with the brand green gradient
-  // on a dark rounded plate, so it stays legible on any theme background.
-  expect(favicon).toContain('viewBox="0 0 64 64"')
-  expect(favicon).toContain('<polygon')
-  expect(favicon).toContain('#5cf0bd')
-  expect(favicon).toContain('#1e9e79')
+  // The favicon is an SVG wrapper that embeds the mascot raster as a data URI,
+  // so the tab icon carries the full-color brand mark on any theme background.
+  expect(favicon).toContain('<image')
+  expect(favicon).toContain('data:image/png;base64,')
 })

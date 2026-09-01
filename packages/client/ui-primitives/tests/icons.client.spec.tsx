@@ -58,15 +58,14 @@ describe('ic_ds_ icon set', () => {
 })
 
 describe('FishLogo', () => {
-  it('renders the brand mark (triangle outline plus dot) in currentColor on a square canvas', () => {
+  it('renders the KROKKI mascot mark as a square image', () => {
     const { container } = render(<primitives.FishLogo />)
-    const svg = container.querySelector('svg')!
-    expect(svg.getAttribute('width')).toBe('24')
-    expect(svg.getAttribute('height')).toBe('24')
-    expect(svg.getAttribute('viewBox')).toBe('0 0 64 64')
-    expect(container.querySelector('polygon')).not.toBeNull()
-    expect(container.querySelector('circle')).not.toBeNull()
-    expect(container.innerHTML).toContain('currentColor')
+    const img = container.querySelector('img')!
+    expect(img).not.toBeNull()
+    expect(img.getAttribute('width')).toBe('24')
+    expect(img.getAttribute('height')).toBe('24')
+    expect(img.getAttribute('src')).toContain('krokki-logo')
+    expect(img.getAttribute('aria-hidden')).toBe('true')
   })
 })
 
@@ -75,12 +74,12 @@ describe('BrandWordmark', () => {
     const view = render(<primitives.BrandWordmark />)
     expect(view.container.textContent).toContain('KROKKI')
     expect(view.container.textContent).toContain('HARNESS')
-    // With the mark, the leading brand glyph svg is present.
-    expect(view.container.querySelector('svg')).not.toBeNull()
+    // With the mark, the leading mascot image is present.
+    expect(view.container.querySelector('img')).not.toBeNull()
 
     view.rerender(<primitives.BrandWordmark includeMark={false} />)
-    // Without the mark, only the word plus badge plate remain — no glyph svg.
-    expect(view.container.querySelector('svg')).toBeNull()
+    // Without the mark, only the word plus badge plate remain — no image.
+    expect(view.container.querySelector('img')).toBeNull()
     expect(view.container.textContent).toContain('KROKKI')
     expect(view.container.textContent).toContain('HARNESS')
   })
