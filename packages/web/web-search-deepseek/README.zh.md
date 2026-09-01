@@ -1,5 +1,5 @@
 ---
-description: "ctx.web 的 DeepSeek 搜索提供方：部署方如何通过 Anthropic 兼容 Messages API 挂载 DeepSeek 原生 web 搜索，并逐次解析凭据。"
+description: "ctx.web 的 Krokki 搜索提供方：部署方如何通过 Anthropic 兼容 Messages API 挂载 Krokki 原生 web 搜索，并逐次解析凭据。"
 kind: "package-reference"
 ---
 
@@ -9,7 +9,7 @@ kind: "package-reference"
 
 ## 概述
 
-有了 `dsh-web-search-deepseek`，harness 可以通过 DeepSeek 原生搜索检索 web，使用部署已有的 `KROKKI_API_KEY`。当部署希望使用 DeepSeek 原生搜索、并接受一次搜索在延迟与 token 上消耗一个完整模型轮次时选择它，因为 DeepSeek 不提供专用搜索端点。结果来自 DeepSeek 返回的结构化搜索块，绝不会从回复文本中抓取。凭据缺失时调用以结构化错误失败；响应缺少搜索结果块时会响亮地失败，而非降级。面向模型的 `web_search` 工具位于 `dsh-tool-web`。
+有了 `dsh-web-search-deepseek`，harness 可以通过 Krokki 原生搜索检索 web，使用部署已有的 `KROKKI_API_KEY`。当部署希望使用 Krokki 原生搜索、并接受一次搜索在延迟与 token 上消耗一个完整模型轮次时选择它，因为 Krokki 不提供专用搜索端点。结果来自 Krokki 返回的结构化搜索块，绝不会从回复文本中抓取。凭据缺失时调用以结构化错误失败；响应缺少搜索结果块时会响亮地失败，而非降级。面向模型的 `web_search` 工具位于 `dsh-tool-web`。
 
 ## 目录
 
@@ -29,7 +29,7 @@ kind: "package-reference"
 
 ### 何时选择
 
-当部署希望使用 DeepSeek 原生服务端 web 搜索、且已持有 `KROKKI_API_KEY` 时选择此后端——提供方复用该凭据引用。一次搜索比专用检索端点更重：DeepSeek 在完整模型轮次内执行搜索，因此每次搜索都要预期一次 Messages 调用的延迟与生成 token，每次请求最多 `maxUses` 次服务端搜索。当单次搜索的成本或延迟占主导时避免使用它。
+当部署希望使用 Krokki 原生服务端 web 搜索、且已持有 `KROKKI_API_KEY` 时选择此后端——提供方复用该凭据引用。一次搜索比专用检索端点更重：Krokki 在完整模型轮次内执行搜索，因此每次搜索都要预期一次 Messages 调用的延迟与生成 token，每次请求最多 `maxUses` 次服务端搜索。当单次搜索的成本或延迟占主导时避免使用它。
 
 ### 最小配置
 
@@ -45,7 +45,7 @@ kind: "package-reference"
 
 | 字段 | 默认值 | 含义 |
 |---|---|---|
-| `apiKey` | 未设置 | DeepSeek API 密钥字面值；优先使用 `apiKeyEnv`，避免密钥进入配置。非空字面值优先 |
+| `apiKey` | 未设置 | Krokki API 密钥字面值；优先使用 `apiKeyEnv`，避免密钥进入配置。非空字面值优先 |
 | `apiKeyEnv` | `KROKKI_API_KEY` | 每次搜索通过 `ctx.credentials` 解析的凭据引用；没有该服务时从进程环境解析。值缺失时调用以 `WEB_PROVIDER_CREDENTIAL_MISSING` 失败 |
 | `baseURL` | `https://api.krokki.com/anthropic/v1` | Anthropic 兼容端点基址；追加 `/messages`。缺省时回退到 `$DEEPSEEK_SEARCH_BASE_URL`；无法解析时提供方不可用 |
 | `model` | `deepseek-v4-flash` | Anthropic 格式模型名称 |
@@ -57,11 +57,11 @@ kind: "package-reference"
 
 ### 搜索返回什么
 
-`content` 始终省略：DeepSeek 的提供方文本不作为答案受到信任。`sources[]` 来自 `web_search_tool_result` 块内的 `web_search_result` 条目——`url`、`title`、`publishedAt` 取自 `page_age`——snippet 在存在摘录时按 URL 关联的 `cited_text` 条目拼接。结果按 URL 去重，且由于 DeepSeek 不公开结果数量旋钮，服务通过截断并标记来强制执行 `maxResults`。
+`content` 始终省略：Krokki 的提供方文本不作为答案受到信任。`sources[]` 来自 `web_search_tool_result` 块内的 `web_search_result` 条目——`url`、`title`、`publishedAt` 取自 `page_age`——snippet 在存在摘录时按 URL 关联的 `cited_text` 条目拼接。结果按 URL 去重，且由于 Krokki 不公开结果数量旋钮，服务通过截断并标记来强制执行 `maxResults`。
 
 ### 请求日志
 
-由发起 agent（智能体）运行的搜索会在发出请求前一刻，追加仅用于日志的 `web/deepseek-search-llm-request` 会话事件。其中包含已解析端点、API 版本，以及发送给 DeepSeek 且不含密钥的精确 JSON 请求体；不包含标头和凭据。发出请求前发生凭据失败或取消时不会创建事件，而发出请求后的 HTTP 或响应失败会保留本次请求尝试的持久记录。
+由发起 agent（智能体）运行的搜索会在发出请求前一刻，追加仅用于日志的 `web/deepseek-search-llm-request` 会话事件。其中包含已解析端点、API 版本，以及发送给 Krokki 且不含密钥的精确 JSON 请求体；不包含标头和凭据。发出请求前发生凭据失败或取消时不会创建事件，而发出请求后的 HTTP 或响应失败会保留本次请求尝试的持久记录。
 
 ### 失败与恢复
 
@@ -81,7 +81,7 @@ kind: "package-reference"
 
 本提供方建立在两项承诺之上：
 
-- **只取结构化块。** DeepSeek 在服务端执行搜索并返回结构化的 `web_search_tool_result` 块；提供方解析这些块，绝不从模型文本中抓取 URL。严格模式下，没有此类块的响应会抛出 `WEB_PROVIDER_ERROR`，而非降级。
+- **只取结构化块。** Krokki 在服务端执行搜索并返回结构化的 `web_search_tool_result` 块；提供方解析这些块，绝不从模型文本中抓取 URL。严格模式下，没有此类块的响应会抛出 `WEB_PROVIDER_ERROR`，而非降级。
 - **一个凭据，逐次解析。** 提供方复用 `KROKKI_API_KEY` 引用（不新增密钥），但不复用 `$KROKKI_BASE_URL`，因为搜索使用 Anthropic 兼容 Messages API。已挂载的凭据服务具有权威性；没有该服务时回退到启动进程的环境。按次解析意味着在 Web 的 Models 页中存储或轮换的密钥无需重启，即可用于下一次搜索。
 
 ### 源码地图
@@ -118,11 +118,11 @@ kind: "package-reference"
 <a id="model-experience"></a>
 ## 模型体验
 
-### 辅助 DeepSeek 搜索请求
+### 辅助 Krokki 搜索请求
 
 #### 模型看到的内容
 
-独立的 DeepSeek 模型会原样接收 `Perform a web search for the query: <query>` 作为用户文本，并收到一个原生 `web_search` 服务器工具定义。该请求不属于会话模型上下文。
+独立的 Krokki 模型会原样接收 `Perform a web search for the query: <query>` 作为用户文本，并收到一个原生 `web_search` 服务器工具定义。该请求不属于会话模型上下文。
 
 #### Token 影响
 
@@ -136,7 +136,7 @@ kind: "package-reference"
 
 #### 模型看到的内容
 
-通过 `dsh-tool-web`，会话模型会看到结构化搜索块中去重后的 URL、标题、日期与引用 snippet；提供方文本不会作为答案受到信任。该提供方的具体失败消息包括带有处理指引的凭据缺失消息、`DeepSeek search credential resolution failed: <error>` 和 `DeepSeek search aborted`。请求、HTTP、原生搜索和响应正文失败会追加已解析端点及前述条件式配置指引。错误包装属于消费方。
+通过 `dsh-tool-web`，会话模型会看到结构化搜索块中去重后的 URL、标题、日期与引用 snippet；提供方文本不会作为答案受到信任。该提供方的具体失败消息包括带有处理指引的凭据缺失消息、`Krokki search credential resolution failed: <error>` 和 `Krokki search aborted`。请求、HTTP、原生搜索和响应正文失败会追加已解析端点及前述条件式配置指引。错误包装属于消费方。
 
 #### Token 影响
 
@@ -153,7 +153,7 @@ kind: "package-reference"
 
 这些限制说明提供方在哪些情况下昂贵或不完整。它们是当前包约束。
 
-- **一次搜索消耗一个完整的 Messages 模型轮次**——产生延迟与生成 token，最多执行 `maxUses` 次服务端搜索；DeepSeek 不公开专用检索端点。
+- **一次搜索消耗一个完整的 Messages 模型轮次**——产生延迟与生成 token，最多执行 `maxUses` 次服务端搜索；Krokki 不公开专用检索端点。
 - **动态凭据的可用性在操作内部解析**——同步可用性检查可以确认解析器存在，但无法查询异步凭据存储，因此选中的无密钥提供方会使搜索以 `WEB_PROVIDER_CREDENTIAL_MISSING` 失败；稳定的 `web_search` schema 仍保持注册。
 - **超量返回的来源仍消耗 token**——协议没有结果数量旋钮，`maxResults` 只能由服务在事后截断。
 - **未引用的结果没有 `snippet`**——只有当文本块引用（`cited_text`）匹配其 URL 时，来源才会获得 snippet。
@@ -168,6 +168,6 @@ kind: "package-reference"
 
 #### 未来：专用检索端点
 
-能够避免完整模型轮次的 DeepSeek 原生搜索端点将消除主要成本；在 DeepSeek 公开此类端点之前，本提供方仍是 Messages 调用适配器。
+能够避免完整模型轮次的 Krokki 原生搜索端点将消除主要成本；在 Krokki 公开此类端点之前，本提供方仍是 Messages 调用适配器。
 
 </details>

@@ -1,4 +1,4 @@
-# Live-recording patch for a deterministic failed DeepSeek search request.
+# Live-recording patch for a deterministic failed Krokki search request.
 - insert:
     - id: web-search-error-fixture
       name: './web-search-error-fixture.mjs'

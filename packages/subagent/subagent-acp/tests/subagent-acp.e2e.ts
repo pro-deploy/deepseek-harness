@@ -17,7 +17,7 @@ import * as acp from '../src/index.ts'
  * spawn coverage and self-skips without `KROKKI_API_KEY`.
  */
 
-// The real ACP profile: dsh plus the example's live DeepSeek patch.
+// The real ACP profile: dsh plus the example's live Krokki patch.
 const binScript = fileURLToPath(new URL('../../../../apps/cli/src/bin.ts', import.meta.url))
 const exampleConfig = fileURLToPath(new URL('../../../../snapshots/acp/escalation-approved/cordis.yml', import.meta.url))
 const repoTsconfig = fileURLToPath(new URL('../../../../tsconfig.json', import.meta.url))

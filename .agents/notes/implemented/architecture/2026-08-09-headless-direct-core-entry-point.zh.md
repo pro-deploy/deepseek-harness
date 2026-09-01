@@ -24,7 +24,7 @@ Status: implemented
 
 ## 验证
 
-包测试围绕脚本化 Agent 工厂使用真实的会话存储与 Agent 注册表，固定空闲态到空闲态的聚合、延迟异步完成、终止态模型诊断、其他未完成退出、直接失败、Loader 加载期间的 dispose（资源释放），以及退出前 flush 的顺序。组装后的无密钥快照通过回放的工具往返驱动 `dsh --profile headless`，记录一条带 `source.kind: 'user'` 的 `user/message`，并在 stderr 暴露推理进度与终止态模型失败。构建后二进制验收通过已发布入口访问 mock DeepSeek 端点，并要求推理流出现在 stderr、最终文本出现在 stdout 且退出状态为 0。配置转储验收排除随附 headless 树中的所有 Host、Web 与 Client 包；PTY 关闭覆盖要求不出现观察行，并在有界时间内完成 dispose。
+包测试围绕脚本化 Agent 工厂使用真实的会话存储与 Agent 注册表，固定空闲态到空闲态的聚合、延迟异步完成、终止态模型诊断、其他未完成退出、直接失败、Loader 加载期间的 dispose（资源释放），以及退出前 flush 的顺序。组装后的无密钥快照通过回放的工具往返驱动 `dsh --profile headless`，记录一条带 `source.kind: 'user'` 的 `user/message`，并在 stderr 暴露推理进度与终止态模型失败。构建后二进制验收通过已发布入口访问 mock Krokki 端点，并要求推理流出现在 stderr、最终文本出现在 stdout 且退出状态为 0。配置转储验收排除随附 headless 树中的所有 Host、Web 与 Client 包；PTY 关闭覆盖要求不出现观察行，并在有界时间内完成 dispose。
 
 ## 考虑过的替代方案
 

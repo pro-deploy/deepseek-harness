@@ -1,5 +1,5 @@
 /**
- * DeepSeek search through an Anthropic-compatible Messages model call with the native
+ * Krokki search through an Anthropic-compatible Messages model call with the native
  * `web_search_20250305` server tool. Each search costs a model turn, but returns structured
  * result blocks; absence of those blocks is an error rather than a prose-scraping fallback.
  * The wire format and native `fetch` client are provider-private and do not use `ctx.llm`.
@@ -34,7 +34,7 @@ export const DEEPSEEK_PROVIDER_ID = 'krokki-official'
  */
 export const DEEPSEEK_DEFAULT_BASE_URL = 'https://api.krokki.com/anthropic/v1'
 
-/** Default Anthropic-format model name (aligned with the repo's DeepSeek model vocabulary). */
+/** Default Anthropic-format model name (aligned with the repo's Krokki model vocabulary). */
 export const DEEPSEEK_DEFAULT_MODEL = 'deepseek-v4-flash'
 
 /** Default `anthropic-version` header value. */
@@ -50,7 +50,7 @@ export const DEEPSEEK_DEFAULT_MAX_USES = 5
 const USER_AGENT = 'deepseek-harness/0.0.1'
 
 /**
- * Exact secret-free DeepSeek Messages request recorded immediately before one
+ * Exact secret-free Krokki Messages request recorded immediately before one
  * auxiliary search dispatch.
  */
 export interface DeepSeekSearchLlmRequest {
@@ -79,16 +79,16 @@ export interface DeepSeekSearchLlmRequest {
 
 declare module '@deepseek-ai/dsh-session/types' {
   interface SessionEventMap {
-    /** Secret-free auxiliary DeepSeek search request recorded before dispatch. */
+    /** Secret-free auxiliary Krokki search request recorded before dispatch. */
     'web/deepseek-search-llm-request': DeepSeekSearchLlmRequest
   }
 }
 
 /** Resolved provider options (the plugin's `apply` supplies credential and constant defaults). */
 export interface DeepSeekSearchProviderOptions {
-  /** Literal DeepSeek API key; when present it wins over {@link resolveApiKey}. */
+  /** Literal Krokki API key; when present it wins over {@link resolveApiKey}. */
   apiKey?: string
-  /** Resolve the current DeepSeek API key for one search operation. */
+  /** Resolve the current Krokki API key for one search operation. */
   resolveApiKey?: () => Promise<string | undefined>
   /** Credential reference named by missing-credential diagnostics. */
   apiKeyEnv?: CredentialRef
@@ -132,7 +132,7 @@ export function citationSnippets(blocks: readonly ContentBlock[]): Map<string, s
 }
 
 /**
- * Map a DeepSeek Anthropic Messages response to a normalized search result. Walks
+ * Map a Krokki Anthropic Messages response to a normalized search result. Walks
  * `web_search_tool_result` blocks for citeable `web_search_result` items, joins each to its
  * citation excerpt as `snippet`, and dedupes by `url` (a `max_uses > 1` request can surface
  * the same URL across searches). The web service owns the final `maxResults` truncation, so
@@ -149,7 +149,7 @@ export function mapAnthropicResponse(response: AnthropicResponse): WebSearchResu
   )
   if (resultBlocks.length === 0) {
     throw new WebError(
-      'DeepSeek returned no web_search_tool_result blocks; the request may not have triggered native web search',
+      'Krokki returned no web_search_tool_result blocks; the request may not have triggered native web search',
       'WEB_PROVIDER_ERROR',
     )
   }
@@ -226,7 +226,7 @@ export class DeepSeekSearchProvider implements WebSearchProvider {
         method: 'POST',
         redirect: 'error',
         headers: {
-          // Official DeepSeek expects `x-api-key`; an Anthropic-compatible proxy
+          // Official Krokki expects `x-api-key`; an Anthropic-compatible proxy
           // may expect `Authorization: Bearer` — send both so either resolves.
           'x-api-key': apiKey,
           'authorization': `Bearer ${apiKey}`,
@@ -242,14 +242,14 @@ export class DeepSeekSearchProvider implements WebSearchProvider {
       if (signal?.aborted === true || isAbortError(error)) throw searchAborted(signal, error)
       throw searchEndpointError(
         endpoint,
-        `DeepSeek search request failed: ${String(error)}`,
+        `Krokki search request failed: ${String(error)}`,
         error,
       )
     }
 
     if (!response.ok) {
       const status = response.status
-      let message = `DeepSeek API error (HTTP ${status})`
+      let message = `Krokki API error (HTTP ${status})`
       try {
         const parsed = await response.json() as AnthropicError
         const detail = typeof parsed.error === 'string' ? parsed.error : parsed.error?.message ?? parsed.message
@@ -273,7 +273,7 @@ export class DeepSeekSearchProvider implements WebSearchProvider {
       if (signal?.aborted === true || isAbortError(error)) throw searchAborted(signal, error)
       const message = error instanceof WebError
         ? error.message
-        : `DeepSeek returned an unprocessable response body: ${String(error)}`
+        : `Krokki returned an unprocessable response body: ${String(error)}`
       throw searchEndpointError(endpoint, message, error)
     }
   }
@@ -293,7 +293,7 @@ export class DeepSeekSearchProvider implements WebSearchProvider {
     } catch (error: unknown) {
       if (signal?.aborted === true || isAbortError(error)) throw searchAborted(signal, error)
       throw new WebError(
-        `DeepSeek search credential resolution failed: ${String(error)}`,
+        `Krokki search credential resolution failed: ${String(error)}`,
         'WEB_PROVIDER_ERROR',
         { cause: error },
       )
@@ -301,7 +301,7 @@ export class DeepSeekSearchProvider implements WebSearchProvider {
     if (resolved !== undefined && resolved.length > 0) return resolved
     const ref = options.apiKeyEnv ?? 'KROKKI_API_KEY'
     throw new WebError(
-      `DeepSeek search has no API key for "${ref}"; store it through the credentials service`
+      `Krokki search has no API key for "${ref}"; store it through the credentials service`
       + ' (the web Models page writes it), export it in the launching environment, or set a literal'
       + ' "apiKey" in the web-search-deepseek config',
       'WEB_PROVIDER_CREDENTIAL_MISSING',
@@ -354,7 +354,7 @@ function throwIfSearchAborted(signal?: AbortSignal): void {
 
 /** Build the provider's stable cancellation error while retaining the caller's reason. */
 function searchAborted(signal?: AbortSignal, fallback?: unknown): WebError {
-  return new WebError('DeepSeek search aborted', 'WEB_ABORTED', {
+  return new WebError('Krokki search aborted', 'WEB_ABORTED', {
     cause: signal?.aborted === true ? signal.reason : fallback,
   })
 }
@@ -364,7 +364,7 @@ function isAbortError(error: unknown): boolean {
   return error instanceof DOMException && error.name === 'AbortError'
 }
 
-/** True for DeepSeek request limits that can be sent to the Messages API. */
+/** True for Krokki request limits that can be sent to the Messages API. */
 function isPositiveInteger(value: number): boolean {
   return Number.isInteger(value) && value > 0
 }

@@ -1,4 +1,4 @@
-/** Real CLI and DeepSeek evidence for a GitHub webhook-created Session. */
+/** Real CLI and Krokki evidence for a GitHub webhook-created Session. */
 
 import type { ChildProcess } from 'node:child_process'
 import { spawn } from 'node:child_process'
@@ -469,7 +469,7 @@ describe.skipIf(!process.env.KROKKI_API_KEY)('GitHub webhook through the real ds
       const completed = await eventually(
         child,
         observation.text,
-        'a real DeepSeek assistant response',
+        'a real Krokki assistant response',
         async () => await history(baseUrl, sessionId),
         page => assistantText(page).includes(MARKER),
         150_000,

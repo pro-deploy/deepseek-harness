@@ -18,7 +18,7 @@ const IMAGE_OFFLOAD_CONFIG = fileURLToPath(new URL('./fixtures/image-offload.cor
 const SNAPSHOTS_DIR = fileURLToPath(new URL('../../../../../../snapshots/acp/', import.meta.url))
 const READ_IMAGE_WORKSPACE = fileURLToPath(new URL('../../../../../../snapshots/session/read-image/workspace/', import.meta.url))
 
-it('pins native DeepSeek Files offload and inline fallback in assembled requests', async () => {
+it('pins native Krokki Files offload and inline fallback in assembled requests', async () => {
   const requests: Record<string, unknown>[] = []
   const fileRequests: Array<{ method: string; path: string; bytes: number }> = []
   let rejectFiles = false

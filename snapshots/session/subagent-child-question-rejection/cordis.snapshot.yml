@@ -1,5 +1,5 @@
 # Keyless counterpart to child-question.cordis.yml: keep the real interaction
-# seam, model-facing tool, and tripwire provider while replacing DeepSeek with
+# seam, model-facing tool, and tripwire provider while replacing Krokki with
 # per-session replay.
 - id: llm-pi-ai
   name: '@deepseek-ai/dsh-llm-pi-ai'

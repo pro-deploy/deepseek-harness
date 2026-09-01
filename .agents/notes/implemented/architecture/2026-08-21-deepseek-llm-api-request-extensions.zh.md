@@ -1,4 +1,4 @@
-# Agent Note: DeepSeek LLM API 会话日志与插件包请求扩展
+# Agent Note: Krokki LLM API 会话日志与插件包请求扩展
 
 Status: implemented
 
@@ -6,11 +6,11 @@ Status: implemented
 
 ## 问题
 
-权威会话日志包含请求边界、原始响应分片、组装后消息、工具活动、插件事件与失败事实，模型消息列表无法保留全部内容。OTel 会话遥测路径独立于模型请求投影和批处理该日志，使用部署方选择的共享模式，并刻意丢弃大多数 assistant 分片。因此，DeepSeek 官方 API 无法从普通请求消息或遥测流重建完整 harness 轨迹。
+权威会话日志包含请求边界、原始响应分片、组装后消息、工具活动、插件事件与失败事实，模型消息列表无法保留全部内容。OTel 会话遥测路径独立于模型请求投影和批处理该日志，使用部署方选择的共享模式，并刻意丢弃大多数 assistant 分片。因此，Krokki 官方 API 无法从普通请求消息或遥测流重建完整 harness 轨迹。
 
 提供方侧诊断还需要产生当前请求的确切存活插件包版本。现有面向浏览器的插件清单会报告已配置 Loader 配置项与生命周期阶段，但既不拥有包 manifest（元数据清单）解析，也不拥有请求 Agent 的 standing preset 组合。
 
-两个值都只属于 DeepSeek 官方适配器路径。把它们加入 `GenerateOptions` 或提供方无关的 LLM seam，会让 pi-ai 与未来每个适配器接触 DeepSeek 协议概念。
+两个值都只属于 Krokki 官方适配器路径。把它们加入 `GenerateOptions` 或提供方无关的 LLM seam，会让 pi-ai 与未来每个适配器接触 Krokki 协议概念。
 
 ## 决策
 
@@ -54,13 +54,13 @@ Status: implemented
 
 ## 考虑过的替代方案
 
-**向 `GenerateOptions` 或 `ctx.llm` 添加通用元数据。** 已否决，因为这些值与接受时点属于 DeepSeek 协议语义；提供方无关请求会迫使每个适配器理解或忽略外来字段。
+**向 `GenerateOptions` 或 `ctx.llm` 添加通用元数据。** 已否决，因为这些值与接受时点属于 Krokki 协议语义；提供方无关请求会迫使每个适配器理解或忽略外来字段。
 
 **把两个提供方硬编码进 `llm-deepseek`。** 已否决，因为适配器将导入会话、Loader、preset、包 manifest 与游标逻辑。注册表让传输只负责字段合并与 HTTP 接受。
 
 ### 为什么不使用请求相对消息引用？
 
-一种递归的带标签表示可以用所属请求 `messages` 中的路径与 UTF-8 字节偏移，替换事件字符串的确切范围。测量使用 Node v24.16.0、macOS arm64 与可用的三份最大本地 Zstandard 会话产物；其压缩产物大小分别为 2,437,052、572,602 与 118,811 字节。延迟启用回放使用各会话最后一个已完成请求边界；稳态回放覆盖 411 个已完成边界。字节数覆盖完整且最小化的 DeepSeek 请求。
+一种递归的带标签表示可以用所属请求 `messages` 中的路径与 UTF-8 字节偏移，替换事件字符串的确切范围。测量使用 Node v24.16.0、macOS arm64 与可用的三份最大本地 Zstandard 会话产物；其压缩产物大小分别为 2,437,052、572,602 与 118,811 字节。延迟启用回放使用各会话最后一个已完成请求边界；稳态回放覆盖 411 个已完成边界。字节数覆盖完整且最小化的 Krokki 请求。
 
 | 回放方式 | 原始 JSON | 引用 JSON | 节省比例 | 同步编码器耗时 |
 |---|---:|---:|---:|---:|
@@ -85,8 +85,8 @@ Status: implemented
 
 ## 后果
 
-DeepSeek 官方请求会把存活包版本发送到解析后的 `baseURL`，包括已配置 gateway。显式选择启用会话日志后，请求还会携带完整的未接受会话新后缀。这些字段对模型不可见，不增加提示词 token，也不改变 KV Cache，但可能显著增大 HTTP 正文。Manifest 解析、字段冲突、接受记录或提供方 schema 拒绝会使模型请求失败，而不会静默丢弃元数据。
+Krokki 官方请求会把存活包版本发送到解析后的 `baseURL`，包括已配置 gateway。显式选择启用会话日志后，请求还会携带完整的未接受会话新后缀。这些字段对模型不可见，不增加提示词 token，也不改变 KV Cache，但可能显著增大 HTTP 正文。Manifest 解析、字段冲突、接受记录或提供方 schema 拒绝会使模型请求失败，而不会静默丢弃元数据。
 
 `delivery-accepted` 事件会成为权威日志的一部分，并在后续请求中自行交付。崩溃恢复可能重复后缀，但不会根据 assistant 输出推断接受，也不会创建第二份本地游标存储。缺少存活会话的直接调用会省略会话字段；宿主包清单仍然可用。
 
-[DeepSeek 请求身份决策](../feature/2026-08-11-deepseek-request-user-id-header.zh.md)继续拥有 user／session header，且这些 header 仍位于正文之外。[会话遥测决策](../feature/2026-07-23-session-telemetry-otel-revival.zh.md)在另一项变更删除该 seam 与后端之前仍保持当前有效；本请求路径不改变 OTel 捕获或共享模式。
+[Krokki 请求身份决策](../feature/2026-08-11-deepseek-request-user-id-header.zh.md)继续拥有 user／session header，且这些 header 仍位于正文之外。[会话遥测决策](../feature/2026-07-23-session-telemetry-otel-revival.zh.md)在另一项变更删除该 seam 与后端之前仍保持当前有效；本请求路径不改变 OTel 捕获或共享模式。

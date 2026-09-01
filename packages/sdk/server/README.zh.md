@@ -1,5 +1,5 @@
 ---
-description: "面向让进程外 SDK 客户端在 DeepSeek Harness 运行时中打开会话并驱动 agent 的部署的 stdio JSON-RPC 服务插件。"
+description: "面向让进程外 SDK 客户端在 Krokki Harness 运行时中打开会话并驱动 agent 的部署的 stdio JSON-RPC 服务插件。"
 kind: "package-reference"
 ---
 
@@ -29,7 +29,7 @@ kind: "package-reference"
 
 ### 组装
 
-插件在首次使用时为每个 `sessionId` 创建一个 agent。已注册的模型适配器赢得路由；尚无适配器负责的 `krokki-official` 路由会挂载 DeepSeek 适配器，任何其他尚无适配器负责的提供方都会导致初始化失败。初始化成功前，所选适配器会解析确切模型与可选推理强度。
+插件在首次使用时为每个 `sessionId` 创建一个 agent。已注册的模型适配器赢得路由；尚无适配器负责的 `krokki-official` 路由会挂载 Krokki 适配器，任何其他尚无适配器负责的提供方都会导致初始化失败。初始化成功前，所选适配器会解析确切模型与可选推理强度。
 
 ### 配置
 
@@ -125,7 +125,7 @@ Stdout 只承载 JSON-RPC 帧，客户端可以逐字节解析；诊断信息应
 - **协议没有逐会话关闭或提示词取消方法**——SDK 创建的 agent 会一直存活到进程关闭。
 - **没有逐提示词结果**——`MessageId` 只标识 inbox 准入；拥有自动化活动区间的客户端必须自行定义并观察该区间。
 - **stdout 纯净性由部署保证**——外围配置仍可能加载 stdout logger 并破坏 JSON-RPC 通道；此插件不会检查或否决同级 logger。
-- **自动挂载适配器仅支持 DeepSeek**——`initialize` 可以复用任何预先注册的模型适配器，但唯一的回退行为是挂载 DeepSeek 适配器。
+- **自动挂载适配器仅支持 DeepSeek**——`initialize` 可以复用任何预先注册的模型适配器，但唯一的回退行为是挂载 Krokki 适配器。
 
 <a id="dev-note"></a>
 ### 开发备注

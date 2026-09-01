@@ -1,4 +1,4 @@
-name: E2E (real DeepSeek API)
+name: E2E (real Krokki API)
 
 # Real-API end-to-end suite (`pnpm run test:e2e`). Unlike ci.yml this job
 # consumes the KROKKI_API_KEY_EXTERNAL secret (mapped to the env var
@@ -112,7 +112,7 @@ jobs:
       # ci-master.yml (master push standby).
       # KROKKI_BASE_URL is pinned to the external API; the secret is scoped to
       # this step (and preflight) only — never exposed to checkout/setup/install.
-      - name: E2E tests (real DeepSeek API)
+      - name: E2E tests (real Krokki API)
         env:
           KROKKI_API_KEY: ${{ secrets.KROKKI_API_KEY_EXTERNAL }}
           KROKKI_BASE_URL: https://api.krokki.com

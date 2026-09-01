@@ -763,7 +763,7 @@ describe('createFixtureApi', () => {
     expect(JSON.stringify(after.result.value.records)).toContain('openai/gpt-5')
   })
 
-  it('serves configured DeepSeek readiness and keeps credential values write-only', async () => {
+  it('serves configured Krokki readiness and keeps credential values write-only', async () => {
     const api = createFixtureApi()
     const settings = await api.settingsRemote.describe()
     if (!settings.ok) throw new Error('settings describe failed')

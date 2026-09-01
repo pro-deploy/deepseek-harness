@@ -10,7 +10,7 @@ Status: implemented
 
 ## 决定
 
-两个编码器只按一个解码事实路由：带 alpha 通道的源图编码为 effort 0 的有损 WebP，不透明源图编码为 JPEG（libjpeg-turbo），共用质量阶梯 85、75、60（`encoding.ts` 的 `IMAGE_ENCODING_QUALITIES` / `WEBP_ENCODING_EFFORT` / `encodingLadder`）。色数分类器和 palette PNG 分支被删除而不是修复，误判这一 bug 类别因此不可能复发，也不再有图片付出分类解码成本。`normalizedImageMaxBytes` 和路由 `maxBytes` 的语义从上限改为阶梯目标：阶梯仍在第一个装得下的质量档停下，但全部档位都超过目标时保留最小产物，缩图重试循环被删除。提供方字节硬限制（DeepSeek 单图 32MiB、inline 预算）仍在传输字节的位置执行。master 尺寸规则从长边上限改为总像素预算：`normalizedImageMaxPixels`（默认 2048×2048）按比例缩放，`normalizedImageMaxDimension`（默认 8192，与准入单边上限一致）随后夹住长边，因此长页面截图这类极端长宽比保留短边分辨率（2000×20000 的源图短边保留约 647px 而不是 204px），正方形源图的规范化结果与之前完全一致。请求变换版本升到 `request-image-v5`，已有变体缓存按身份自然重建；内容寻址的 master 无需迁移，继续有效。请求缓存读取不再拒绝超过字节目标的条目，因为阶梯耗尽的产物就是该 variant id 的确定性结果。
+两个编码器只按一个解码事实路由：带 alpha 通道的源图编码为 effort 0 的有损 WebP，不透明源图编码为 JPEG（libjpeg-turbo），共用质量阶梯 85、75、60（`encoding.ts` 的 `IMAGE_ENCODING_QUALITIES` / `WEBP_ENCODING_EFFORT` / `encodingLadder`）。色数分类器和 palette PNG 分支被删除而不是修复，误判这一 bug 类别因此不可能复发，也不再有图片付出分类解码成本。`normalizedImageMaxBytes` 和路由 `maxBytes` 的语义从上限改为阶梯目标：阶梯仍在第一个装得下的质量档停下，但全部档位都超过目标时保留最小产物，缩图重试循环被删除。提供方字节硬限制（Krokki 单图 32MiB、inline 预算）仍在传输字节的位置执行。master 尺寸规则从长边上限改为总像素预算：`normalizedImageMaxPixels`（默认 2048×2048）按比例缩放，`normalizedImageMaxDimension`（默认 8192，与准入单边上限一致）随后夹住长边，因此长页面截图这类极端长宽比保留短边分辨率（2000×20000 的源图短边保留约 647px 而不是 204px），正方形源图的规范化结果与之前完全一致。请求变换版本升到 `request-image-v5`，已有变体缓存按身份自然重建；内容寻址的 master 无需迁移，继续有效。请求缓存读取不再拒绝超过字节目标的条目，因为阶梯耗尽的产物就是该 variant id 的确定性结果。
 
 对 issue #2885 复现集的 Pareto 实测（PR #2989 附录）支撑这个选择：摄影类内容上 JPEG 比其余所有编码器快 1 至 2 个数量级，effort 0 的 WebP 在图形类内容上体积与 palette PNG 相当且不会被误判；均匀噪声最坏输入在不透明链的 q85 一档即落入默认 4MiB/1MiB 目标，只有对抗性的随机 alpha 平面会耗尽 WebP 阶梯（约 6.3MiB，距提供方上限还有 5 倍）。
 

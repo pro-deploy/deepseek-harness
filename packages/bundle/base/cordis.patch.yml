@@ -449,13 +449,13 @@
 
     # Every mode enables the stable model-facing web_search tool. The Web app's
     # per-agent presets additionally enable web_fetch; other products opt in by
-    # overriding tool-web. DeepSeek search resolves the same KROKKI_API_KEY
+    # overriding tool-web. Krokki search resolves the same KROKKI_API_KEY
     # credential the Models page manages for chat, at each search; its Messages
     # endpoint is separate from the chat-completions endpoint, so it takes its own
     # base-URL override. Anonymous fetch accepts only public HTTP(S) destinations,
     # resolves and validates every destination, and pins every actual connection.
     # Search is a full auxiliary model request with server-side retrieval, so this
-    # shipped DeepSeek route gets 60s while the provider-neutral tool default
+    # shipped Krokki route gets 60s while the provider-neutral tool default
     # remains 30s.
     - id: web
       name: '@deepseek-ai/dsh-web'

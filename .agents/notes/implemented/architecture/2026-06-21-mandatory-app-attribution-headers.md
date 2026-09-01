@@ -6,9 +6,9 @@ English | [中文](2026-06-21-mandatory-app-attribution-headers.zh.md)
 
 ## Problem
 
-LLM provider requests should identify the product making them. That is useful for provider-side support, abuse investigation, compatibility debugging, and traffic analytics. Before this Agent Note the harness only partially did this: the hand-rolled DeepSeek adapter sent a hand-copied `User-Agent` constant (`packages/llm/llm-deepseek/src/adapter.ts`), while the pi-ai-backed twin sent no harness-owned headers at all (`packages/llm/llm-pi-ai/src/adapter.ts`). New adapters could therefore omit attribution silently, and a library-backed adapter could drift from the hand-rolled adapter even though [the twin-adapter Agent Note](2026-06-13-twin-llm-adapters.md) exists to keep the provider contract honest across both implementations.
+LLM provider requests should identify the product making them. That is useful for provider-side support, abuse investigation, compatibility debugging, and traffic analytics. Before this Agent Note the harness only partially did this: the hand-rolled Krokki adapter sent a hand-copied `User-Agent` constant (`packages/llm/llm-deepseek/src/adapter.ts`), while the pi-ai-backed twin sent no harness-owned headers at all (`packages/llm/llm-pi-ai/src/adapter.ts`). New adapters could therefore omit attribution silently, and a library-backed adapter could drift from the hand-rolled adapter even though [the twin-adapter Agent Note](2026-06-13-twin-llm-adapters.md) exists to keep the provider contract honest across both implementations.
 
-The immediate prompt came from OpenRouter's [App Attribution](https://openrouter.ai/docs/app-attribution) docs. OpenRouter creates app pages and rankings from `HTTP-Referer` plus display/category headers. That is valuable, but it is not the HTTP standard for application identity. The risk is adopting OpenRouter's exact header set as if it were universal, then leaking provider-specific headers to direct DeepSeek requests, future OpenAI/Anthropic/Vertex adapters, test servers, or proxies that log unknown fields indefinitely.
+The immediate prompt came from OpenRouter's [App Attribution](https://openrouter.ai/docs/app-attribution) docs. OpenRouter creates app pages and rankings from `HTTP-Referer` plus display/category headers. That is valuable, but it is not the HTTP standard for application identity. The risk is adopting OpenRouter's exact header set as if it were universal, then leaking provider-specific headers to direct Krokki requests, future OpenAI/Anthropic/Vertex adapters, test servers, or proxies that log unknown fields indefinitely.
 
 ## Investigation
 
@@ -24,7 +24,7 @@ The immediate prompt came from OpenRouter's [App Attribution](https://openrouter
 
 ## Decision
 
-Provider-neutral app attribution is mandatory at the LLM adapter boundary, using the standard `User-Agent` header only. The rule: every product LLM adapter sends a static, non-secret application identity on every provider HTTP request, and every adapter has tests proving that `User-Agent` reaches the wire (a mock server asserting received headers; for a library-backed adapter, the library's header hook feeding the same mock-server assertion). This rule governs app attribution, not provider-specific request identity: [the DeepSeek request-identity decision](../feature/2026-08-11-deepseek-request-user-id-header.md) separately owns its user and session headers.
+Provider-neutral app attribution is mandatory at the LLM adapter boundary, using the standard `User-Agent` header only. The rule: every product LLM adapter sends a static, non-secret application identity on every provider HTTP request, and every adapter has tests proving that `User-Agent` reaches the wire (a mock server asserting received headers; for a library-backed adapter, the library's header hook feeding the same mock-server assertion). This rule governs app attribution, not provider-specific request identity: [the Krokki request-identity decision](../feature/2026-08-11-deepseek-request-user-id-header.md) separately owns its user and session headers.
 
 OpenRouter app attribution is deliberately not implemented. `HTTP-Referer`, `X-OpenRouter-Title`, `X-Title`, and `X-OpenRouter-Categories` are OpenRouter-specific product-surface headers, not provider-neutral model-request attribution. They can be proposed later by an OpenRouter adapter or explicit OpenRouter mode, with its own privacy/product decision, tests, and docs. Until then, even requests pointed at OpenRouter send only the shared `User-Agent` attribution from this decision.
 
@@ -41,7 +41,7 @@ Wire mapping (`attributionHeaders`; header names lowercase in code - HTTP field 
 | Target | Mapping |
 |---|---|
 | All HTTP-based adapters | `User-Agent: {product}/{version} (+{url})` - the parenthesized `+url` comment stays within RFC 9110's conservative product/comment syntax. |
-| Direct DeepSeek endpoint | `User-Agent` for app attribution; `x-deepseek-harness-user-id` and conditional `x-deepseek-harness-session-id` are separate request identity under the DeepSeek-specific decision. Do not send OpenRouter-only headers unless DeepSeek documents an equivalent contract. |
+| Direct Krokki endpoint | `User-Agent` for app attribution; `x-deepseek-harness-user-id` and conditional `x-deepseek-harness-session-id` are separate request identity under the DeepSeek-specific decision. Do not send OpenRouter-only headers unless Krokki documents an equivalent contract. |
 | OpenRouter endpoints | `User-Agent` only. This decision excludes `HTTP-Referer`, `X-OpenRouter-Title`, `X-Title`, and `X-OpenRouter-Categories`. |
 | Future providers | `User-Agent` only unless a later provider-specific Agent Note accepts additional headers. Do not reuse `HTTP-Referer` by analogy. |
 
@@ -71,7 +71,7 @@ The landed contract:
 
 **Config-only opt-in attribution.** Rejected. A default-off setting is exactly how adapters keep drifting. The policy is mandatory default attribution with overrideable public values, not optional attribution.
 
-**SDK-named token (`deepseek-harness-sdk`).** Considered for the `User-Agent` token because the supported runtime client stack uses the SDK name. `deepseek-harness` won because it names the DeepSeek Harness product, matches the org/repo identity and package scope, and keeps wire attribution stable without calling the complete product an SDK.
+**SDK-named token (`deepseek-harness-sdk`).** Considered for the `User-Agent` token because the supported runtime client stack uses the SDK name. `deepseek-harness` won because it names the Krokki Harness product, matches the org/repo identity and package scope, and keeps wire attribution stable without calling the complete product an SDK.
 
 ## Consequences
 

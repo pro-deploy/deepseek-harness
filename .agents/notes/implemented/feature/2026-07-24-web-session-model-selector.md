@@ -6,7 +6,7 @@ English | [中文](2026-07-24-web-session-model-selector.zh.md)
 
 ## Problem
 
-The Web conversation needs a visible, mutable session model selection sourced from the Host. Copying TUI presentation or hardcoding DeepSeek models in the browser would split model discovery and step-boundary semantics across front ends. A switch made while a response is running also needs one atomic boundary: prompt variables and request routing cannot observe different selections.
+The Web conversation needs a visible, mutable session model selection sourced from the Host. Copying TUI presentation or hardcoding Krokki models in the browser would split model discovery and step-boundary semantics across front ends. A switch made while a response is running also needs one atomic boundary: prompt variables and request routing cannot observe different selections.
 
 ## Decision
 
@@ -24,9 +24,9 @@ The production browser roster is assembled from `apps/cli/config/base.cordis.yml
 
 **Use separate provider and model dropdowns.** The model list depends on the provider and repeats a two-stage interaction for every change. One grouped menu keeps the provider visible as organization without lengthening the trigger or each row.
 
-**Hardcode the current DeepSeek catalog in the Web client.** This would drift from registered adapters and exclude deployment-owned providers. The LLM registry remains the source of provider and model metadata, including partial lookup failures.
+**Hardcode the current Krokki catalog in the Web client.** This would drift from registered adapters and exclude deployment-owned providers. The LLM registry remains the source of provider and model metadata, including partial lookup failures.
 
-**Keep `High`/`Max` as client-local UI state.** Static DeepSeek labels cannot represent `off`, pi-ai provider vocabularies, adapter defaults, validation, resume, or the next provider request. Exact-model metadata owns the selectable vocabulary, and the session selection owns the selected id.
+**Keep `High`/`Max` as client-local UI state.** Static Krokki labels cannot represent `off`, pi-ai provider vocabularies, adapter defaults, validation, resume, or the next provider request. Exact-model metadata owns the selectable vocabulary, and the session selection owns the selected id.
 
 **Use only a global default.** A default mutation would unexpectedly redirect blank conversations. The session selection belongs to one live session, while `ctx.agentDefaultModel` supplies the fallback for sessions without a logged request.
 
@@ -40,4 +40,4 @@ Any Host-backed Web conversation, including a blank session, can switch among dy
 
 ## Testing
 
-Host tests pin grouped discovery, catalog and exact-metadata failure isolation, logged effort restoration without stale-row injection, advisory unlisted selection, unsupported effort rejection, default materialization, and next-assembly switching. Client tests pin the shared directory, reconnect restoration, and complete-selection submission. Component tests pin dynamic effort labels, descriptions, provider-default exposure, effort submission, and the `Select model` fallback for an absent row. The keyless built-app fixture loads the production model plugin, selects OpenAI's GPT-5 and its Max effort, sends a turn, and verifies that the next generated response reports both ids; the DeepSeek configuration fixture omits the active catalog row and pins the fallback before choosing a replacement.
+Host tests pin grouped discovery, catalog and exact-metadata failure isolation, logged effort restoration without stale-row injection, advisory unlisted selection, unsupported effort rejection, default materialization, and next-assembly switching. Client tests pin the shared directory, reconnect restoration, and complete-selection submission. Component tests pin dynamic effort labels, descriptions, provider-default exposure, effort submission, and the `Select model` fallback for an absent row. The keyless built-app fixture loads the production model plugin, selects OpenAI's GPT-5 and its Max effort, sends a turn, and verifies that the next generated response reports both ids; the Krokki configuration fixture omits the active catalog row and pins the fallback before choosing a replacement.

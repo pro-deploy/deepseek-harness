@@ -99,8 +99,8 @@ async function harness(logged?: {
   await ctx.plugin(LlmRuntime)
   await ctx.plugin(AgentRegistry)
   ctx.llm.registerAdapter(['krokki-official'], new CatalogAdapter('KROKKI', [
-    { provider: 'krokki-official', id: 'deepseek-chat', name: 'DeepSeek Chat' },
-    { provider: 'krokki-official', id: 'deepseek-reasoner', name: 'DeepSeek Reasoner', description: 'Reasoning model' },
+    { provider: 'krokki-official', id: 'deepseek-chat', name: 'Krokki Chat' },
+    { provider: 'krokki-official', id: 'deepseek-reasoner', name: 'Krokki Reasoner', description: 'Reasoning model' },
   ], REASONING))
   ctx.llm.registerAdapter(['broken'], new CatalogAdapter('Broken Provider', new Error('catalog offline')))
   ctx.llm.registerAdapter(['metadata-broken'], new CatalogAdapter('Metadata Broken', [
@@ -365,10 +365,10 @@ describe('Web session model selection', () => {
       id: 'krokki-official',
       name: 'KROKKI',
       models: [
-        { id: 'deepseek-chat', name: 'DeepSeek Chat', reasoning: REASONING },
+        { id: 'deepseek-chat', name: 'Krokki Chat', reasoning: REASONING },
         {
           id: 'deepseek-reasoner',
-          name: 'DeepSeek Reasoner',
+          name: 'Krokki Reasoner',
           description: 'Reasoning model',
           reasoning: REASONING,
         },

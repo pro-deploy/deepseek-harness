@@ -1,4 +1,4 @@
-// Keyless browser e2e: the shipped DeepSeek adapter stays mounted while its
+// Keyless browser e2e: the shipped Krokki adapter stays mounted while its
 // credential is absent, both ordered steps share the shipped modal chrome,
 // and the inline key write lands in an isolated harness home without a reload
 // or model call.
@@ -23,7 +23,7 @@ const MISSING_EXPECTED = join(SNAPSHOT_DIR, 'missing.expected.md')
 const MODELS_EXPECTED = join(SNAPSHOT_DIR, 'models.expected.md')
 const MODE = webSnapshotMode()
 
-describe.skipIf(MODE === 'record')('web e2e: first-run DeepSeek credential setup', () => {
+describe.skipIf(MODE === 'record')('web e2e: first-run Krokki credential setup', () => {
   let scaffold: WebScaffold
   let browser: Browser
   let page: Page
@@ -190,7 +190,7 @@ describe.skipIf(MODE === 'record')('web e2e: first-run DeepSeek credential setup
     expect(tripwire.pageErrors).toEqual([])
   }, 60_000)
 
-  it('configures arbitrary DeepSeek models and prompts after the selected model is removed', async () => {
+  it('configures arbitrary Krokki models and prompts after the selected model is removed', async () => {
     onTestFailed(() => saveFailureShot(page, 'web-e2e-onboarding-deepseek-models'))
     // Opened here rather than inherited: the credential test reloads the page
     // after configuring the key, so nothing carries an open dialog across.

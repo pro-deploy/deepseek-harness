@@ -1,8 +1,8 @@
 /**
- * Official-DeepSeek first-run step. Readiness comes from the same
+ * Official-Krokki first-run step. Readiness comes from the same
  * provider/settings/credential join as the Models page: any provider the user
  * can already talk to ends the step, and only a user with none is offered the
- * official DeepSeek route. The step reuses that page's credential editor in
+ * official Krokki route. The step reuses that page's credential editor in
  * the onboarding plugin's shared modal, so the key is entered once.
  */
 
@@ -41,11 +41,11 @@ export type DeepSeekOnboardingDialogProps =
 
 /* v8 ignore next 3 -- closed-union defaults only defend future source widening */
 function assertNever(_value: never): never {
-  throw new Error('unexpected DeepSeek onboarding state')
+  throw new Error('unexpected Krokki onboarding state')
 }
 
 /**
- * Prompt a first-run user for the official DeepSeek credential while no
+ * Prompt a first-run user for the official Krokki credential while no
  * provider can serve requests and that credential is writable.
  * @param props - settings-shell owner state and Models feature dependencies.
  * @returns the onboarding modal or null when onboarding needs no intervention.

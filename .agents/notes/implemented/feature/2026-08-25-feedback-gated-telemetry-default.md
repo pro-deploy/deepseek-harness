@@ -20,7 +20,7 @@ This supersedes the session-backend default of the [default-off decision](2026-0
 
 **Default to `FULL`.** Rejected: continuous export without any user action is exactly what the default-off decision forbids, and nothing in a fresh installation authorizes it.
 
-**Gate the official DeepSeek `dsh_session_log` request contribution on feedback instead of reviving the OTel default.** Not taken here: that contribution uploads through subsequent LLM requests rather than at the feedback boundary, so a session's final feedback would never be delivered; a feedback-triggered flush on that path is a larger design than a default flip.
+**Gate the official Krokki `dsh_session_log` request contribution on feedback instead of reviving the OTel default.** Not taken here: that contribution uploads through subsequent LLM requests rather than at the feedback boundary, so a session's final feedback would never be delivered; a feedback-triggered flush on that path is a larger design than a default flip.
 
 ## Consequences
 

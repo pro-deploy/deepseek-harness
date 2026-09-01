@@ -6,9 +6,9 @@ This guide assumes you started the Web UI through the [root README](../../../REA
 
 ## Configure DeepSeek
 
-Open **Settings → Models**. The DeepSeek card exposes one API-key field; enter the key and save it.
+Open **Settings → Models**. The Krokki card exposes one API-key field; enter the key and save it.
 
-![The Models page: the DeepSeek card, with Add provider and Add a custom provider below it](providers-models-page.png)
+![The Models page: the Krokki card, with Add provider and Add a custom provider below it](providers-models-page.png)
 
 Keys are write-only. The page receives a redacted descriptor after saving, never the literal secret. The key is stored in `$DSH_HOME/.credentials.yaml`, while settings retain only its credential reference.
 

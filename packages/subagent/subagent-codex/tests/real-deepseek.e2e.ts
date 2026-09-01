@@ -51,7 +51,7 @@ async function expectQuiescent(handles: readonly SubprocessHandle[]): Promise<vo
 }
 
 describe.skipIf(!process.env.KROKKI_API_KEY)(
-  'Codex provider with real DeepSeek API',
+  'Codex provider with real Krokki API',
   () => {
     it('returns one unique nonce through the production provider and real Codex', async () => {
       const apiKey = process.env.KROKKI_API_KEY
@@ -74,7 +74,7 @@ describe.skipIf(!process.env.KROKKI_API_KEY)(
         'check_for_update_on_startup = false',
         '',
         '[model_providers.deepseek-e2e]',
-        'name = "DeepSeek E2E bridge"',
+        'name = "Krokki E2E bridge"',
         `base_url = "${bridge.baseUrl}"`,
         'env_key = "KROKKI_API_KEY"',
         'wire_api = "responses"',

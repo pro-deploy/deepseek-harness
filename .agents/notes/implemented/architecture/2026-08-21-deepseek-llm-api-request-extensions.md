@@ -1,4 +1,4 @@
-# Agent Note: DeepSeek LLM API request extensions for session logs and plugin packages
+# Agent Note: Krokki LLM API request extensions for session logs and plugin packages
 
 Status: implemented
 
@@ -10,7 +10,7 @@ The canonical Session log contains request boundaries, raw response chunks, asse
 
 Provider-side diagnosis also needs the exact active plugin package versions that produced a request. The existing browser-facing plugin inventory reports configured Loader rows and lifecycle phases but owns neither package-manifest resolution nor the requesting agent's standing preset composition.
 
-Both values belong only on the official DeepSeek adapter path. Adding them to `GenerateOptions` or the provider-neutral LLM seam would expose DeepSeek wire concepts to pi-ai and every future adapter.
+Both values belong only on the official Krokki adapter path. Adding them to `GenerateOptions` or the provider-neutral LLM seam would expose Krokki wire concepts to pi-ai and every future adapter.
 
 ## Decision
 
@@ -54,13 +54,13 @@ Registry tests pin duplicate ownership, effect-scoped disposal, detached field v
 
 ## Alternatives considered
 
-**Add generic metadata to `GenerateOptions` or `ctx.llm`.** Rejected because the values and acceptance timing are DeepSeek wire semantics; a provider-neutral request would make every adapter understand or ignore foreign fields.
+**Add generic metadata to `GenerateOptions` or `ctx.llm`.** Rejected because the values and acceptance timing are Krokki wire semantics; a provider-neutral request would make every adapter understand or ignore foreign fields.
 
 **Hard-wire the two producers into `llm-deepseek`.** Rejected because the adapter would import Session, Loader, preset, package-manifest, and cursor logic. The registry keeps transport responsible only for field merge and HTTP acceptance.
 
 ### Why not request-relative message references?
 
-A recursive tagged representation could replace exact event-string ranges with paths and UTF-8 byte offsets into the containing request's `messages`. Measurement used Node v24.16.0 on macOS arm64 and the three largest available local Zstandard Session artifacts, whose compressed artifact sizes were 2,437,052, 572,602, and 118,811 bytes. Late-enable replay used each final completed request boundary; steady replay covered 411 completed boundaries. The byte counts cover complete minified DeepSeek requests.
+A recursive tagged representation could replace exact event-string ranges with paths and UTF-8 byte offsets into the containing request's `messages`. Measurement used Node v24.16.0 on macOS arm64 and the three largest available local Zstandard Session artifacts, whose compressed artifact sizes were 2,437,052, 572,602, and 118,811 bytes. Late-enable replay used each final completed request boundary; steady replay covered 411 completed boundaries. The byte counts cover complete minified Krokki requests.
 
 | Replay | Raw JSON | Referenced JSON | Saving | Synchronous encoder time |
 |---|---:|---:|---:|---:|
@@ -85,8 +85,8 @@ About 98% of the measured real-session events were `assistant/chunk`. Omitting c
 
 ## Consequences
 
-Official DeepSeek requests carry active package versions to their resolved `baseURL`, including configured gateways. An explicit Session-log opt-in also carries the complete newly unaccepted Session suffix. The fields are model-hidden and add no prompt tokens or KV-cache changes, but can substantially increase HTTP body size. Manifest resolution, field collision, acceptance logging, or provider schema rejection fails the model request rather than silently dropping metadata.
+Official Krokki requests carry active package versions to their resolved `baseURL`, including configured gateways. An explicit Session-log opt-in also carries the complete newly unaccepted Session suffix. The fields are model-hidden and add no prompt tokens or KV-cache changes, but can substantially increase HTTP body size. Manifest resolution, field collision, acceptance logging, or provider schema rejection fails the model request rather than silently dropping metadata.
 
 The `delivery-accepted` event becomes part of the canonical log and is itself delivered on a later request. Crash recovery can duplicate a suffix but does not infer acceptance from assistant output or create a second local cursor store. Direct calls without a live Session omit the session field; host package inventory remains available.
 
-The [DeepSeek request-identity decision](../feature/2026-08-11-deepseek-request-user-id-header.md) continues to own user/session headers, which remain outside the body. The [session-telemetry decision](../feature/2026-07-23-session-telemetry-otel-revival.md) remains current until a separate change removes that seam and backend; this request path does not alter OTel capture or sharing modes.
+The [Krokki request-identity decision](../feature/2026-08-11-deepseek-request-user-id-header.md) continues to own user/session headers, which remain outside the body. The [session-telemetry decision](../feature/2026-07-23-session-telemetry-otel-revival.md) remains current until a separate change removes that seam and backend; this request path does not alter OTel capture or sharing modes.

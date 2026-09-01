@@ -6,7 +6,7 @@ Status: implemented
 
 ## 问题
 
-DeepSeek Harness 在 TUI 和 Headless coding agent 之外，还提供了两个重复的产品 agent（智能体）。面向行的 stdio agent 使用混合的提示符/输出协议，同时重复实现终端交互与非交互执行。Echo 则以无需联网的 mock 模型加一个教学工具重复实现 Headless，把测试 fixture（测试前置数据）变成面向用户的 agent 和默认快速上手路径。
+Krokki Harness 在 TUI 和 Headless coding agent 之外，还提供了两个重复的产品 agent（智能体）。面向行的 stdio agent 使用混合的提示符/输出协议，同时重复实现终端交互与非交互执行。Echo 则以无需联网的 mock 模型加一个教学工具重复实现 Headless，把测试 fixture（测试前置数据）变成面向用户的 agent 和默认快速上手路径。
 
 两个 agent 的配套实现都不止叶节点配置。stdio 拥有 UI 插件、app 包（package）、SDK 接口、REPL 叶节点、提示符协议和 Loader 测试。Echo 拥有可运行命令、mock 适配器、工具、CI 演示门禁、图谱条目、教学引用和共享测试 fixture。保留其中任何产品路径，都会间接保留这个重复的 agent。
 
@@ -22,7 +22,7 @@ DeepSeek Harness 在 TUI 和 Headless coding agent 之外，还提供了两个�
 - [`dsh --profile headless`](../../../../apps/cli/README.zh.md)负责非交互式执行。其 `headless` profile 是产品组装；录制会话位于 `snapshots/session/`，profile 集成测试位于 `apps/cli/tests/profiles/headless/`，共享 Loader driver 位于 `packages/test-support/loader-smoke/tests/fixtures/`。
 - [`dsh --profile acp`](../../../../apps/cli/README.zh.md) 和 `@deepseek-ai/dsh-sdk-jsonrpc-server` 负责各自的分帧协议集成。
 
-承载 `stdio` 运行接口选项的 SDK 项目模型已由 [SDK 项目工具链移除决策](2026-08-11-remove-sdk-project-toolchain.zh.md)删除。仓库中的演示文档要求 DeepSeek API key，并优先引导到当前可运行的产品。
+承载 `stdio` 运行接口选项的 SDK 项目模型已由 [SDK 项目工具链移除决策](2026-08-11-remove-sdk-project-toolchain.zh.md)删除。仓库中的演示文档要求 Krokki API key，并优先引导到当前可运行的产品。
 
 无密钥验证由测试负责。Headless Loader 冒烟测试使用 fixture 适配器验证真实工具往返；`dsh` built-bin 测试套件固定已发布的一次性入口和输出；产品 Headless 快照固定持久化；Headless PTY 关闭 e2e 固定信号升级。各包专属的 Loader 测试则将确定性适配器放在对应场景旁。其中任何一项都不会作为可运行的 mock agent 对外暴露。
 

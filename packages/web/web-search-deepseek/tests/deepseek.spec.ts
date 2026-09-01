@@ -305,13 +305,13 @@ describe('DeepSeekSearchProvider error handling', () => {
     }).search({ query: 'q' }, controller.signal))
       .rejects.toThrow(expect.objectContaining({
         code: 'WEB_PROVIDER_ERROR',
-        message: 'DeepSeek search credential resolution failed: Error: credential backend failed',
+        message: 'Krokki search credential resolution failed: Error: credential backend failed',
       }))
   })
 
   it('uses the default credential reference when no resolver is configured', async () => {
     await expect(searchProvider({ ...options, apiKey: '' }).search({ query: 'q' }))
-      .rejects.toThrow('DeepSeek search has no API key for "KROKKI_API_KEY"')
+      .rejects.toThrow('Krokki search has no API key for "KROKKI_API_KEY"')
   })
 
   it('observes cancellation triggered synchronously by credential resolution', async () => {
@@ -335,7 +335,7 @@ describe('DeepSeekSearchProvider error handling', () => {
     await expect(searchProvider(options).search({ query: 'q' }))
       .rejects.toThrow(expect.objectContaining({
         code: 'WEB_PROVIDER_ERROR',
-        message: 'DeepSeek API error (HTTP 429): rate limited\n\n'
+        message: 'Krokki API error (HTTP 429): rate limited\n\n'
           + 'The web search request used endpoint "https://api.deepseek.test/anthropic/v1/messages". '
           + 'Search endpoint configuration is separate from chat. If that endpoint is not intended, '
           + 'guide the user to Settings > Plugins > Plugin configuration > Web search, where they can '
@@ -348,19 +348,19 @@ describe('DeepSeekSearchProvider error handling', () => {
   it('handles a string-form error body', async () => {
     vi.stubGlobal('fetch', vi.fn(async () => jsonResponse({ error: 'bad request' }, { status: 400 })))
     const error = await rejectedWebError(searchProvider(options).search({ query: 'q' }))
-    expect(error.message).toContain('DeepSeek API error (HTTP 400): bad request')
+    expect(error.message).toContain('Krokki API error (HTTP 400): bad request')
   })
 
   it('keeps a status-line message when the error body is not JSON', async () => {
     vi.stubGlobal('fetch', vi.fn(async () => new Response('upstream error', { status: 503 })))
     const error = await rejectedWebError(searchProvider(options).search({ query: 'q' }))
-    expect(error.message).toContain('DeepSeek API error (HTTP 503)')
+    expect(error.message).toContain('Krokki API error (HTTP 503)')
   })
 
   it('keeps the status-line message when the JSON error body carries no detail', async () => {
     vi.stubGlobal('fetch', vi.fn(async () => jsonResponse({}, { status: 500 })))
     const error = await rejectedWebError(searchProvider(options).search({ query: 'q' }))
-    expect(error.message).toContain('DeepSeek API error (HTTP 500)')
+    expect(error.message).toContain('Krokki API error (HTTP 500)')
   })
 
   it('maps an abort to WEB_ABORTED', async () => {

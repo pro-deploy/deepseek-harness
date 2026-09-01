@@ -28,7 +28,7 @@ on:
         default: false
     secrets:
       KROKKI_API_KEY_EXTERNAL:
-        description: Real DeepSeek API key for trusted installed-wheel pull-request tests.
+        description: Real Krokki API key for trusted installed-wheel pull-request tests.
         required: false
   workflow_dispatch:
     inputs:

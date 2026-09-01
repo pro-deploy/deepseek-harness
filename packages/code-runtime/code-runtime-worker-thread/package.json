@@ -1,6 +1,6 @@
 {
   "name": "@deepseek-ai/dsh-code-runtime-worker-thread",
-  "description": "Worker-thread implementation of the DeepSeek Harness code-execution seam",
+  "description": "Worker-thread implementation of the Krokki Harness code-execution seam",
   "version": "0.1.2-alpha.3",
   "publishConfig": {
     "access": "public"

@@ -6,7 +6,7 @@ English | [中文](2026-07-20-remove-stdio-and-echo-agents.zh.md)
 
 ## Problem
 
-DeepSeek Harness exposed two redundant product agents beside the TUI and Headless coding agents. The line-oriented stdio agent duplicated terminal interaction and non-interactive execution with a mixed prompt/output protocol. Echo duplicated Headless as a network-free mock model plus one teaching tool, making a test fixture into a user-facing agent and the default quick-start path.
+Krokki Harness exposed two redundant product agents beside the TUI and Headless coding agents. The line-oriented stdio agent duplicated terminal interaction and non-interactive execution with a mixed prompt/output protocol. Echo duplicated Headless as a network-free mock model plus one teaching tool, making a test fixture into a user-facing agent and the default quick-start path.
 
 Both agents carried support surfaces beyond their leaf configurations. Stdio owned a UI plugin, app package, SDK interface, REPL leaf, prompt protocol, and Loader tests. Echo owned a runnable command, mock adapter, tool, CI demo gate, graph entry, teaching references, and a shared test fixture. Keeping any of those product paths would preserve the redundant agent indirectly.
 
@@ -22,7 +22,7 @@ The remaining application roles are explicit:
 - [`dsh --profile headless`](../../../../apps/cli/README.md) owns non-interactive execution. Its `headless` profile is the product composition; recorded sessions live under `snapshots/session/`, profile integration tests under `apps/cli/tests/profiles/headless/`, and shared Loader drivers under `packages/test-support/loader-smoke/tests/fixtures/`.
 - [`dsh --profile acp`](../../../../apps/cli/README.md) and `@deepseek-ai/dsh-sdk-jsonrpc-server` own their framed protocol integrations.
 
-The SDK project model that carried the `stdio` run-interface option is deleted by the [SDK project toolchain removal](2026-08-11-remove-sdk-project-toolchain.md). Repository-facing demo documentation requires a DeepSeek API key and leads with a current runnable product.
+The SDK project model that carried the `stdio` run-interface option is deleted by the [SDK project toolchain removal](2026-08-11-remove-sdk-project-toolchain.md). Repository-facing demo documentation requires a Krokki API key and leads with a current runnable product.
 
 Keyless validation is test-owned. The Headless Loader smoke uses a fixture adapter to exercise a real tool round trip, the `dsh` built-bin suite pins the published one-shot entry and output, the product Headless snapshot pins persistence, and the Headless PTY shutdown e2e pins signal escalation. Package-specific Loader tests keep deterministic adapters beside their scenarios. None is exposed as a runnable mock agent.
 

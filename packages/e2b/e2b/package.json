@@ -1,6 +1,6 @@
 {
   "name": "@deepseek-ai/dsh-e2b",
-  "description": "Shared E2B sandbox lifecycle for DeepSeek Harness provider adapters",
+  "description": "Shared E2B sandbox lifecycle for Krokki Harness provider adapters",
   "version": "0.1.2-alpha.3",
   "publishConfig": {
     "access": "public"

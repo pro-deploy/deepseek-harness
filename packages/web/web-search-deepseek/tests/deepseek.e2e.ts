@@ -15,7 +15,7 @@ const searchProvider = (options: DeepSeekSearchProviderOptions): DeepSeekSearchP
   new DeepSeekSearchProvider(() => options)
 
 /**
- * Disabled real-API probe for the DeepSeek search provider. The live endpoint
+ * Disabled real-API probe for the Krokki search provider. The live endpoint
  * can complete without structured source blocks, so this is not a reliable
  * merge signal. Its body remains because mocks cannot confirm the wire shape.
  */
@@ -32,7 +32,7 @@ maybe('DeepSeekSearchProvider real API', () => {
       maxTokens: DEEPSEEK_DEFAULT_MAX_TOKENS,
       maxUses: DEEPSEEK_DEFAULT_MAX_USES,
     })
-    const result = await provider.search({ query: 'What is DeepSeek Harness?', maxResults: 5 })
+    const result = await provider.search({ query: 'What is Krokki Harness?', maxResults: 5 })
     expect(result.sources.length).toBeGreaterThan(0)
     for (const source of result.sources) expect(source.url).toMatch(/^https?:\/\//)
   }, 60_000)

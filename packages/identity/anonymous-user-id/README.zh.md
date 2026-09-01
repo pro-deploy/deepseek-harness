@@ -1,5 +1,5 @@
 ---
-description: "面向用户与维护者的匿名按 harness home 身份说明，用于追踪遥测、反馈确认与 DeepSeek 提供方请求如何关联记录。"
+description: "面向用户与维护者的匿名按 harness home 身份说明，用于追踪遥测、反馈确认与 Krokki 提供方请求如何关联记录。"
 kind: "package-library"
 ---
 
@@ -9,7 +9,7 @@ kind: "package-library"
 
 ## 概述
 
-每个 harness home 都会获得一个匿名 id，遥测、反馈与 DeepSeek 请求会把它附加到各自的记录上，让接收系统无需了解用户身份即可判断记录来自同一套安装。该 id 是存储在 `$DSH_HOME/.anonymous-user-id`（默认 `~/.dsh`）中的随机 UUID；它会在这些功能之一首次运行时自动出现，跨重启保持稳定，删除文件后会重新生成。不同 harness home 永远不会共享同一个 id，其中也不包含任何机器或账户信息。当你希望关联来自同一套安装、且不依赖账户的记录时使用它；它无法关联不同 home 之间的记录。
+每个 harness home 都会获得一个匿名 id，遥测、反馈与 Krokki 请求会把它附加到各自的记录上，让接收系统无需了解用户身份即可判断记录来自同一套安装。该 id 是存储在 `$DSH_HOME/.anonymous-user-id`（默认 `~/.dsh`）中的随机 UUID；它会在这些功能之一首次运行时自动出现，跨重启保持稳定，删除文件后会重新生成。不同 harness home 永远不会共享同一个 id，其中也不包含任何机器或账户信息。当你希望关联来自同一套安装、且不依赖账户的记录时使用它；它无法关联不同 home 之间的记录。
 
 ## 目录
 
@@ -25,7 +25,7 @@ kind: "package-library"
 <a id="use-this-package"></a>
 ## 使用本包
 
-当你希望本机安装外发的记录能被识别为来自同一个 harness home——遥测、反馈与 DeepSeek 请求都携带同一个共享 id——本包就是提供它的地方。无需安装或配置任何东西：id 会自动出现，已随附的反馈、遥测与 DeepSeek 功能已经在使用它。不要用它来识别用户，也不要用它关联不同 home 之间的记录；它是匿名的且限定于单个 home。
+当你希望本机安装外发的记录能被识别为来自同一个 harness home——遥测、反馈与 Krokki 请求都携带同一个共享 id——本包就是提供它的地方。无需安装或配置任何东西：id 会自动出现，已随附的反馈、遥测与 Krokki 功能已经在使用它。不要用它来识别用户，也不要用它关联不同 home 之间的记录；它是匿名的且限定于单个 home。
 
 ### 该 id 能为你做什么
 
@@ -33,7 +33,7 @@ kind: "package-library"
 
 - **会话遥测**——你的遥测导出会以 `user.id` Resource 属性携带该 id，采集器因此可以按安装分组记录。
 - **反馈**——每条反馈确认都会指名记录该反馈的匿名安装。
-- **DeepSeek 请求**——每次提供方请求都会携带 `x-deepseek-harness-user-id` 标头，因此可以按安装归因用量。
+- **Krokki 请求**——每次提供方请求都会携带 `x-deepseek-harness-user-id` 标头，因此可以按安装归因用量。
 
 ### 查看与重置 id
 
@@ -41,7 +41,7 @@ kind: "package-library"
 
 ### 在自己的包中使用
 
-当你构建的功能需要共享该安装的匿名 id 时，导入该值并复用一次即可——遥测、反馈与 DeepSeek 已经在使用同一个 id，因此你的记录能与它们相互对应：
+当你构建的功能需要共享该安装的匿名 id 时，导入该值并复用一次即可——遥测、反馈与 Krokki 已经在使用同一个 id，因此你的记录能与它们相互对应：
 
 ```ts
 import { getOrCreateAnonymousUserId } from '@deepseek-ai/dsh-anonymous-user-id'

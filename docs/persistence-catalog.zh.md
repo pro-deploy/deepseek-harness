@@ -1042,7 +1042,7 @@ export type SessionEvent<T extends SessionEventType = SessionEventType> = {
 #### `web/deepseek-search-llm-request` — log-only
 
 ```ts persistence-catalog
-/** Secret-free auxiliary DeepSeek search request recorded before dispatch. */
+/** Secret-free auxiliary Krokki search request recorded before dispatch. */
 'web/deepseek-search-llm-request': DeepSeekSearchLlmRequest
 ```
 

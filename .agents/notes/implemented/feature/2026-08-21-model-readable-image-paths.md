@@ -16,9 +16,9 @@ Each LLM provider plugin supplies the bridge at request assembly. It combines th
 
 `RequestImageAttachment` remains a deterministic version selected by the attachment and route policy. It contains `variantId`, encoded bytes, dimensions, and encoding metadata, but no access path. Execution-world access may change with the host or mounted providers and does not participate in `variantId`.
 
-The shared LLM image descriptor names the display name or full attachment id, the exact request-preview dimensions, and the execution-world path when the bridge resolves one. Local access text includes normalized dimensions and media type, identifies the object as read-only, directs the model to copy it to a writable path with the matching extension before editing, and states that normalization or request projection may have resized or re-encoded the upload. DeepSeek Files and pi-ai inline requests use the same descriptor.
+The shared LLM image descriptor names the display name or full attachment id, the exact request-preview dimensions, and the execution-world path when the bridge resolves one. Local access text includes normalized dimensions and media type, identifies the object as read-only, directs the model to copy it to a writable path with the matching extension before editing, and states that normalization or request projection may have resized or re-encoded the upload. Krokki Files and pi-ai inline requests use the same descriptor.
 
-Request-size offload requires a per-image placeholder function; the previous shared placeholder constant and its byte-bound wrapper had no remaining production caller and are removed. DeepSeek and pi-ai replace each omitted occurrence with its own attachment identity and access resolved for that request without reading or transforming the omitted object. Offload selection, byte accounting, and quantized prefix behavior remain unchanged.
+Request-size offload requires a per-image placeholder function; the previous shared placeholder constant and its byte-bound wrapper had no remaining production caller and are removed. Krokki and pi-ai replace each omitted occurrence with its own attachment identity and access resolved for that request without reading or transforming the omitted object. Offload selection, byte accounting, and quantized prefix behavior remain unchanged.
 
 Descriptor identity comes from each occurrence's own durable reference, not from the prepared request version: versions are deduplicated per attachment id, so two uploads of the same content under different names share one version while each occurrence keeps its own display name. Host-location resolution validates the logged attachment id; a malformed reference in durable history fails the request at assembly, the earliest point that resolves it.
 
@@ -40,7 +40,7 @@ Absolute paths stay out of session events and request-image versions. Model-visi
 
 ## Verification
 
-Package tests cover provider host-location defaults, host-backed path mapping, absence without a mapped filesystem, digest-to-path resolution, owner-read-only publication and deduplication, access passed independently from request versions, retained-image descriptions, per-image nested offload placeholders, source-property warnings, and matching extensions. A keyless assembled ACP snapshot checks the exact local object path in both a retained DeepSeek Files image handle and an offloaded image placeholder.
+Package tests cover provider host-location defaults, host-backed path mapping, absence without a mapped filesystem, digest-to-path resolution, owner-read-only publication and deduplication, access passed independently from request versions, retained-image descriptions, per-image nested offload placeholders, source-property warnings, and matching extensions. A keyless assembled ACP snapshot checks the exact local object path in both a retained Krokki Files image handle and an offloaded image placeholder.
 
 ## Consequences
 

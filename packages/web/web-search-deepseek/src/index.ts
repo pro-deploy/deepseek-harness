@@ -44,7 +44,7 @@ const DEFAULT_API_KEY_ENV = 'KROKKI_API_KEY'
 
 /** Plugin config (all optional — `apply` fills env-var and constant defaults). */
 export interface Config {
-  /** Literal DeepSeek API key; prefer {@link apiKeyEnv} so no secret enters configuration files. */
+  /** Literal Krokki API key; prefer {@link apiKeyEnv} so no secret enters configuration files. */
   apiKey?: string
   /** Credential reference resolved for each search; defaults to `KROKKI_API_KEY`. */
   apiKeyEnv?: string
@@ -123,7 +123,7 @@ function resolveOptions(ctx: Context, config: Config): DeepSeekSearchProviderOpt
   }
 }
 
-/** Register the DeepSeek search provider with `ctx.web`. */
+/** Register the Krokki search provider with `ctx.web`. */
 export function apply(ctx: Context, config: Config): void {
   let current: () => Config = () => config
   ctx.inject(['settings'], (settingsCtx) => {

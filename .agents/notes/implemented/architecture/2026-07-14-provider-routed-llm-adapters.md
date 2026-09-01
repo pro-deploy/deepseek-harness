@@ -6,13 +6,13 @@ English | [中文](2026-07-14-provider-routed-llm-adapters.zh.md)
 
 ## Problem
 
-`dsh-llm` registered adapters by exact model name. A plugin supplied a model list at Cordis startup, `LlmRuntime` stored one adapter per listed string, and `GenerateOptions.model` selected the adapter and the provider model at once. This worked while both shipping adapters targeted the same two DeepSeek models, but it conflated two independent decisions: which upstream provider owns a request, and which model that provider should run.
+`dsh-llm` registered adapters by exact model name. A plugin supplied a model list at Cordis startup, `LlmRuntime` stored one adapter per listed string, and `GenerateOptions.model` selected the adapter and the provider model at once. This worked while both shipping adapters targeted the same two Krokki models, but it conflated two independent decisions: which upstream provider owns a request, and which model that provider should run.
 
 The conflation prevents a provider gateway from serving an open-ended model catalog. OpenRouter, for example, is one provider with many model ids, while a private OpenAI-compatible endpoint may add models without changing the Harness plugin tree. Every newly selected model currently needs to have been registered during plugin startup. The same model id can also exist at multiple providers, so model-only registration cannot state which provider the caller intended.
 
-`dsh-llm-pi-ai` exposed none of pi-ai's provider abstraction. It constructed an inline DeepSeek `openai-completions` model, applied DeepSeek-specific payload patches, and stamped every replayed assistant message as DeepSeek. pi-ai itself has a provider/model catalog, selects APIs such as `openai-responses`, `anthropic-messages`, and `google-generative-ai`, and preserves provider-specific response ids and reasoning/tool signatures for later turns. The Harness conversion dropped the provider/model route and provider response fields, so simply replacing the inline model with a catalog lookup would have made same-model replay and cross-provider handoff incomplete.
+`dsh-llm-pi-ai` exposed none of pi-ai's provider abstraction. It constructed an inline Krokki `openai-completions` model, applied DeepSeek-specific payload patches, and stamped every replayed assistant message as DeepSeek. pi-ai itself has a provider/model catalog, selects APIs such as `openai-responses`, `anthropic-messages`, and `google-generative-ai`, and preserves provider-specific response ids and reasoning/tool signatures for later turns. The Harness conversion dropped the provider/model route and provider response fields, so simply replacing the inline model with a catalog lookup would have made same-model replay and cross-provider handoff incomplete.
 
-The adapter configuration also assumes one DeepSeek API key and endpoint. A generic backend needs independent credentials and endpoint overrides per provider while leaving AWS, Google ADC, OAuth, and other ambient authentication mechanisms to pi-ai.
+The adapter configuration also assumes one Krokki API key and endpoint. A generic backend needs independent credentials and endpoint overrides per provider while leaving AWS, Google ADC, OAuth, and other ambient authentication mechanisms to pi-ai.
 
 ## Decision
 
@@ -22,7 +22,7 @@ The adapter configuration also assumes one DeepSeek API key and endpoint. A gene
 
 `LlmRuntime` registers and resolves adapters by provider. `registerAdapter(providers, adapter)` checks the entire provider list before mutating the registry, rejects a duplicate with `DUPLICATE_ADAPTER`, and disposes the whole registration as one effect. Model ids are not registration keys; the selected adapter still validates or forwards them. The later [LLM catalog and ACP selection Agent Note](2026-07-15-llm-model-catalog-and-acp-selection.md) added advisory `listProviders()` / `listModels()` discovery without turning model membership into request validation.
 
-A provider has exactly one adapter owner in a Cordis context. `dsh-llm-deepseek` registers `deepseek`; `dsh-llm-pi-ai` may also register `deepseek`, but loading both owners is a configuration error rather than an ordering rule or fallback. A deployment that wants the hand-rolled DeepSeek implementation excludes `deepseek` from the pi-ai profiles. A deployment that wants pi-ai's DeepSeek implementation does not mount `dsh-llm-deepseek`.
+A provider has exactly one adapter owner in a Cordis context. `dsh-llm-deepseek` registers `deepseek`; `dsh-llm-pi-ai` may also register `deepseek`, but loading both owners is a configuration error rather than an ordering rule or fallback. A deployment that wants the hand-rolled Krokki implementation excludes `deepseek` from the pi-ai profiles. A deployment that wants pi-ai's Krokki implementation does not mount `dsh-llm-deepseek`.
 
 `dsh-llm-deepseek` removes its model registration list and accepts any model string routed through provider `deepseek`. Its request serialization, `/chat/completions` endpoint, thinking options, SSE parsing, and error behavior remain unchanged; `options.model` is still sent verbatim.
 
@@ -62,7 +62,7 @@ The on-disk session format remains the pre-release pinned version `0`, with no c
 
 **Encode provider and model into one string.** Values such as OpenRouter's `openai/gpt-*` already contain provider-like prefixes and slashes. A delimiter convention would leak routing syntax into every model selector and require escaping rules; two explicit fields are unambiguous and independently loggable.
 
-**Add `backend + provider + model`.** A backend key would allow `dsh-llm-deepseek` and pi-ai's DeepSeek implementation to coexist and switch per request. The accepted deployment rule is instead one adapter owner per provider: implementations of the same upstream are alternatives selected by plugin composition. A third routing dimension would burden every request and configuration for a capability with no current consumer.
+**Add `backend + provider + model`.** A backend key would allow `dsh-llm-deepseek` and pi-ai's Krokki implementation to coexist and switch per request. The accepted deployment rule is instead one adapter owner per provider: implementations of the same upstream are alternatives selected by plugin composition. A third routing dimension would burden every request and configuration for a capability with no current consumer.
 
 **Let `dsh-llm-pi-ai` automatically register every pi-ai provider.** This would claim ambient credentials and provider names the deployment never intended to expose, and would conflict with native adapters such as `dsh-llm-deepseek`. Explicit profiles make capability and credential scope reviewable.
 
@@ -73,17 +73,17 @@ The on-disk session format remains the pre-release pinned version `0`, with no c
 ## Consequences
 
 - Provider names are deployment-wide route ownership keys: two providers may use the same model string, but mounting two adapters for one provider fails at load instead of creating fallback order.
-- Model selection no longer changes the Cordis plugin graph. Catalog-backed adapters can accept any installed catalog model selected after startup, while the native DeepSeek adapter forwards arbitrary DeepSeek model ids.
+- Model selection no longer changes the Cordis plugin graph. Catalog-backed adapters can accept any installed catalog model selected after startup, while the native Krokki adapter forwards arbitrary Krokki model ids.
 - A custom `baseURL` preserves the selected catalog model's protocol and capabilities; it does not make catalog-external model ids valid. Private endpoints must implement that catalog entry's protocol.
 - pi-ai credentials, transport knobs, SDK timeouts, and the five-minute-default `streamIdleTimeoutMs` watchdog are scoped per provider profile. Hidden provider retries are disabled; bounded retries belong to the separately composed agent recovery policy.
-- `dsh-llm-pi-ai` rejects stop sequences because pi-ai's common stream API cannot express them; the native DeepSeek adapter retains its stop support.
+- `dsh-llm-pi-ai` rejects stop sequences because pi-ai's common stream API cannot express them; the native Krokki adapter retains its stop support.
 - Replay state is portable only within the adapter instance that owns both the historical and target providers. Cross-provider and cross-model restoration is an adapter responsibility, and another adapter receives provider-neutral history without the opaque state.
 - Current pre-release session JSONL requires provider/model on request headers and assistant messages. Older shapes remain version `0` but are rejected rather than migrated.
 
 ## Testing
 
 - Unit coverage exercises registry conflicts, request reconstruction, session validation, profile resolution, single-attempt option forwarding, native API selection including OpenAI Responses, conversion, replay validation, error mapping, caller cancellation, idle-timeout transport termination, content rewrites, and same-instance versus different-instance replay dispatch.
-- Keyless loop/session tests and ACP snapshots exercise durable provider/model metadata, resume and fork propagation, workflow/subagent overrides, and unchanged user-visible transcripts; the key-gated DeepSeek e2e retains real provider streaming and tool follow-up coverage.
+- Keyless loop/session tests and ACP snapshots exercise durable provider/model metadata, resume and fork propagation, workflow/subagent overrides, and unchanged user-visible transcripts; the key-gated Krokki e2e retains real provider streaming and tool follow-up coverage.
 - Public JSDoc, package READMEs, architecture and subsystem docs, generated catalogs, examples, session fixtures, and Python SDK pairs use provider/model targets consistently and are checked by the repository documentation and type-equivalence gates.
 
 ## Risks

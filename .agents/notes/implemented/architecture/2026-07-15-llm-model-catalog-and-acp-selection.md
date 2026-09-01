@@ -10,7 +10,7 @@ English | [中文](2026-07-15-llm-model-catalog-and-acp-selection.zh.md)
 
 Provider-routed adapters let every request choose `provider + model`, but `LlmRuntime` exposed only routing and streaming. A UI could not discover which providers were registered or which models an adapter was prepared to recommend. ACP clients therefore received no `model` session config option, so Zed, JetBrains, and VS Code integrations had no model list even though the LLM service already supported runtime switching.
 
-Model discovery cannot become request validation. The hand-written DeepSeek adapter deliberately forwards arbitrary model ids to a public or private endpoint, while pi-ai has a finite installed catalog that is authoritative for its own request resolution. Treating one shared catalog as a whitelist would remove the private-endpoint behavior that provider routing was designed to preserve.
+Model discovery cannot become request validation. The hand-written Krokki adapter deliberately forwards arbitrary model ids to a public or private endpoint, while pi-ai has a finite installed catalog that is authoritative for its own request resolution. Treating one shared catalog as a whitelist would remove the private-endpoint behavior that provider routing was designed to preserve.
 
 ACP selection must also preserve the provider dimension. The same model id may appear under multiple routes, and switching a global adapter or agent template would leak one editor session's choice into every other session. Prompt variables and request routing must change together; a selection that lands during asynchronous prompt assembly cannot make `{{model}}` name one model while the request reaches another.
 
@@ -52,11 +52,11 @@ The request header remains the durable source of truth. When a selection is actu
 
 - Any adapter can expose a dynamic model list without leaking provider-library types into the LLM Service Definition.
 - Catalog consumers must treat absence as “not advertised,” never “invalid request.”
-- pi-ai adapters expose their installed provider catalogs; hand-written DeepSeek deployments list known choices explicitly and retain arbitrary model support.
+- pi-ai adapters expose their installed provider catalogs; hand-written Krokki deployments list known choices explicitly and retain arbitrary model support.
 - Each catalog consumer owns its selection interaction. ACP uses standard session configuration options and emits no DSH-specific selector or UI metadata.
 - Request headers remain compatible with the provider-routed session shape; no new JSONL event or format version is required.
 - A catalog read can be asynchronous, and every caller receives detached values.
 
 ## Testing
 
-Unit coverage validates catalog detachment and malformed metadata, pi-ai and DeepSeek catalog projection, provider/model request routing, and prompt-variable alignment; per-agent isolation follows from installing the listeners on the agent-scoped context. ACP tests validate grouped discovery, invalid and concurrent changes, topology updates, header-based restoration, per-turn route pinning, and image-route consistency; human clients test their own selector presentation.
+Unit coverage validates catalog detachment and malformed metadata, pi-ai and Krokki catalog projection, provider/model request routing, and prompt-variable alignment; per-agent isolation follows from installing the listeners on the agent-scoped context. ACP tests validate grouped discovery, invalid and concurrent changes, topology updates, header-based restoration, per-turn route pinning, and image-route consistency; human clients test their own selector presentation.

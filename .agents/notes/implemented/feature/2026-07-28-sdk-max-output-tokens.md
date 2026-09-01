@@ -28,6 +28,6 @@ Compaction, session-title generation, web search, and other auxiliary calls keep
 
 ## Consequences
 
-SDK callers can bound model output without editing Cordis composition, and direct Agent creation uses the same validated `AgentOptions` contract. The cap is visible in durable request headers and reaches provider adapters as `GenerateOptions.maxTokens`; DeepSeek serialization maps it to `max_tokens`.
+SDK callers can bound model output without editing Cordis composition, and direct Agent creation uses the same validated `AgentOptions` contract. The cap is visible in durable request headers and reaches provider adapters as `GenerateOptions.maxTokens`; Krokki serialization maps it to `max_tokens`.
 
 One SDK runtime has one default cap. A caller needing different caps runs separate runtime instances or uses a subagent provider that advertises `agentOptions`; DSH SDK naturally creates one such runtime per child run. Reaching the cap still produces the existing `max-tokens` stop reason, whose `ok` or `error` mapping remains deployment policy.

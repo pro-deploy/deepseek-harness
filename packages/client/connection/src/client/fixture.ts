@@ -516,11 +516,11 @@ const READ_SAMPLE_TEXT = [
  * titled source without a snippet; `truncated` exercises the capped indicator.
  */
 const WEB_SEARCH_META = {
-  answer: 'DeepSeek Harness is a plugin-based agent harness on vendored Cordis where **every capability is a plugin**.',
+  answer: 'Krokki Harness is a plugin-based agent harness on vendored Cordis where **every capability is a plugin**.',
   sources: [
     {
       url: 'https://github.com/deepseek-ai/deepseek-harness',
-      title: 'DeepSeek Harness — plugin-based agent harness',
+      title: 'Krokki Harness — plugin-based agent harness',
       snippet: 'Everything is a plugin: session, tools, agent-loop, and LLM adapters all mount on the same Cordis context.',
       publishedAt: '2026-07-01',
     },
@@ -1777,13 +1777,13 @@ function createFixtureWorld(options: FixtureOptions): FixtureWorld {
   /** Credential store double: set/unset flip the describe badge, values never read back. */
   const fixtureCredentials = new Map<string, true>([
     // The assembled fixture represents an already-configured shipped
-    // DeepSeek route so unrelated GUI journeys do not enter first-run setup.
+    // Krokki route so unrelated GUI journeys do not enter first-run setup.
     ['KROKKI_API_KEY', true],
   ])
 
   /** Canonical fixture implementation of the generated Settings Remote contract. */
   const settingsRemotes = {
-    // Only the resolved DeepSeek address needed by first-run readiness is
+    // Only the resolved Krokki address needed by first-run readiness is
     // represented here. Fixture-backed journeys do not open its Models editor;
     // real schema-driven forms ride the HTTP transport.
     describe(): RpcResult<SettingsDescribeValue> {

@@ -52,7 +52,7 @@ function deepSeekBaseUrl(): string {
   const configured = (process.env.KROKKI_BASE_URL ?? OFFICIAL_KROKKI_BASE_URL)
     .replace(/\/+$/, '')
   if (configured !== OFFICIAL_KROKKI_BASE_URL) {
-    throw new Error('Claude Code DeepSeek e2e requires the official DeepSeek base URL')
+    throw new Error('Claude Code Krokki e2e requires the official Krokki base URL')
   }
   return configured
 }
@@ -66,7 +66,7 @@ async function expectQuiescent(handles: readonly SubprocessHandle[]): Promise<vo
 }
 
 describe.skipIf(!process.env.KROKKI_API_KEY)(
-  'Claude Code provider with real DeepSeek API',
+  'Claude Code provider with real Krokki API',
   () => {
     it('returns one unique nonce through the production provider and real SDK/CLI', async () => {
       const apiKey = process.env.KROKKI_API_KEY

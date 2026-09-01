@@ -698,7 +698,7 @@ describe('modelOverrides', () => {
       deepseek: {
         modelOverrides: {
           [target.id]: {
-            name: 'DeepSeek (proxied)',
+            name: 'Krokki (proxied)',
             maxTokens: 4096,
             reasoningEfforts: { off: null, high: 'high' },
           },
@@ -712,7 +712,7 @@ describe('modelOverrides', () => {
     // The whole catalog still serves — that is the difference from `models`,
     // which replaces it.
     expect(models).toHaveLength(catalogSize)
-    expect(reshaped.name).toBe('DeepSeek (proxied)')
+    expect(reshaped.name).toBe('Krokki (proxied)')
     expect(getSupportedThinkingLevels(reshaped)).toEqual(['off', 'high'])
     // An override's cap is explicit configuration, so it becomes the request
     // default exactly as a models entry's would.

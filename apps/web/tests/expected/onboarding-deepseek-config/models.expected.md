@@ -24,7 +24,7 @@
       - text: DeepSeek
       - img "API 密钥已配置"
       - button "编辑 KROKKI (krokki-official)": 编辑
-      - text: DeepSeek krokki-official API 密钥
+      - text: Krokki krokki-official API 密钥
       - textbox "API 密钥":
         - /placeholder: 已配置——输入新值可替换
       - group:

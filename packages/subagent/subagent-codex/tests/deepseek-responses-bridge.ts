@@ -9,7 +9,7 @@ import { completeResponsesEvents } from './responses-fixture.ts'
 const OFFICIAL_KROKKI_BASE_URL = 'https://api.krokki.com'
 const MAX_REQUEST_BYTES = 1_048_576
 
-/** One running test-only Responses-to-DeepSeek bridge. */
+/** One running test-only Responses-to-Krokki bridge. */
 export interface DeepSeekResponsesBridge {
   readonly baseUrl: string
   readonly completedRequests: number
@@ -23,7 +23,7 @@ function readRequest(request: IncomingMessage): Promise<string> {
     request.on('data', (chunk: string) => {
       body += chunk
       if (Buffer.byteLength(body) > MAX_REQUEST_BYTES) {
-        request.destroy(new Error('DeepSeek bridge request exceeded its byte limit'))
+        request.destroy(new Error('Krokki bridge request exceeded its byte limit'))
       }
     })
     request.on('end', () => { resolve(body) })
@@ -57,7 +57,7 @@ function deepSeekBaseUrl(): string {
   const configured = (process.env.KROKKI_BASE_URL ?? OFFICIAL_KROKKI_BASE_URL)
     .replace(/\/+$/, '')
   if (configured !== OFFICIAL_KROKKI_BASE_URL) {
-    throw new Error('Codex DeepSeek e2e requires the official DeepSeek base URL')
+    throw new Error('Codex Krokki e2e requires the official Krokki base URL')
   }
   return configured
 }
@@ -88,14 +88,14 @@ async function completeWithDeepSeek(
   })
   if (!response.ok) {
     void response.body?.cancel()
-    throw new Error(`DeepSeek bridge upstream returned HTTP ${response.status}`)
+    throw new Error(`Krokki bridge upstream returned HTTP ${response.status}`)
   }
   const payload = await response.json() as {
     choices?: Array<{ message?: { content?: unknown } }>
   }
   const content = payload.choices?.[0]?.message?.content
   if (typeof content !== 'string' || content.trim().length === 0) {
-    throw new Error('DeepSeek bridge upstream returned no text')
+    throw new Error('Krokki bridge upstream returned no text')
   }
   return content
 }
@@ -142,12 +142,12 @@ export async function startDeepSeekResponsesBridge(
         || !authorization.startsWith('Bearer ')
         || authorization.length === 'Bearer '.length
       ) {
-        throw new Error('Codex DeepSeek bridge received no bearer credential')
+        throw new Error('Codex Krokki bridge received no bearer credential')
       }
       const body = JSON.parse(await readRequest(request)) as Record<string, unknown>
       const task = taskText(body)
       if (!task.includes(nonce)) {
-        throw new Error('Codex DeepSeek bridge request omitted the expected nonce')
+        throw new Error('Codex Krokki bridge request omitted the expected nonce')
       }
       const text = await completeWithDeepSeek(authorization, task)
       completedRequests += 1
@@ -165,7 +165,7 @@ export async function startDeepSeekResponsesBridge(
       if (!response.headersSent) {
         response.writeHead(502, { 'content-type': 'application/json' })
       }
-      response.end(JSON.stringify({ error: { message: 'DeepSeek bridge request failed' } }))
+      response.end(JSON.stringify({ error: { message: 'Krokki bridge request failed' } }))
     })
   })
   await new Promise<void>((resolve, reject) => {
@@ -177,7 +177,7 @@ export async function startDeepSeekResponsesBridge(
   })
   const address = server.address()
   if (address === null || typeof address === 'string') {
-    throw new Error('DeepSeek bridge did not acquire a TCP port')
+    throw new Error('Krokki bridge did not acquire a TCP port')
   }
   return {
     baseUrl: `http://127.0.0.1:${address.port}/v1`,

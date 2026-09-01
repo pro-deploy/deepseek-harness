@@ -14,7 +14,7 @@ afterEach(async () => {
   await Promise.all(contexts.splice(0).map(ctx => ctx.fiber.dispose()))
 })
 
-describe.skipIf(!process.env.KROKKI_API_KEY)('first-prompt title provider with real DeepSeek API', () => {
+describe.skipIf(!process.env.KROKKI_API_KEY)('first-prompt title provider with real Krokki API', () => {
   it('replaces the fallback with a short model title', async () => {
     const ctx = new Context()
     contexts.push(ctx)

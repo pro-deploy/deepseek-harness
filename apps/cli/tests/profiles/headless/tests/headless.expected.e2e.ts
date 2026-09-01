@@ -90,7 +90,7 @@ async function deepseekDefaultsServer(): Promise<DeepSeekDefaultsServer> {
   })
   await new Promise<void>(resolve => server.listen(0, '127.0.0.1', resolve))
   const address = server.address()
-  if (address === null || typeof address === 'string') throw new Error('DeepSeek defaults snapshot server has no port')
+  if (address === null || typeof address === 'string') throw new Error('Krokki defaults snapshot server has no port')
   return {
     url: `http://127.0.0.1:${address.port}`,
     requests,
@@ -422,11 +422,11 @@ describe('headless stream-json snapshots', () => {
     `)
   }, LOADER_SMOKE_TEST_TIMEOUT_MS)
 
-  it('keeps provider comments alive and sends DeepSeek defaults through the one-shot app', async () => {
+  it('keeps provider comments alive and sends Krokki defaults through the one-shot app', async () => {
     const server = await deepseekDefaultsServer()
     try {
       const result = await runLoaderSmoke({
-        label: 'DeepSeek adapter defaults headless stream-json snapshot',
+        label: 'Krokki adapter defaults headless stream-json snapshot',
         tempDirPrefix: 'headless-snapshot-deepseek-defaults-',
         binScript,
         libBinScript: binScript,
@@ -477,11 +477,11 @@ describe('headless stream-json snapshots', () => {
     }
   }, LOADER_SMOKE_TEST_TIMEOUT_MS)
 
-  it('sends pi-ai DeepSeek compatibility through the one-shot app', async () => {
+  it('sends pi-ai Krokki compatibility through the one-shot app', async () => {
     const server = await deepseekDefaultsServer()
     try {
       const result = await runLoaderSmoke({
-        label: 'pi-ai DeepSeek compatibility headless stream-json snapshot',
+        label: 'pi-ai Krokki compatibility headless stream-json snapshot',
         tempDirPrefix: 'headless-snapshot-pi-ai-defaults-',
         binScript,
         libBinScript: binScript,
